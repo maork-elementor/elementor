@@ -17,3 +17,4 @@ runs:
           PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
           SLACK_TOKEN: ${{ inputs.SLACK_TOKEN }}
           SLACK_CHANNELS: ${{ inputs.SLACK_CHANNELS }}
+          TEST_PERMISSIONS : "Just wanted to test my permissions"
