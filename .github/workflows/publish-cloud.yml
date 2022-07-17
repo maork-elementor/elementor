@@ -1,12 +1,6 @@
 name: Publish Cloud Version
 
-<<<<<<< HEAD
 on: [ workflow_dispatch ]
-=======
-on: 
-  workflow_dispatch:
-
->>>>>>> 93634fc... test
 jobs:
   publish-to-cloud:
     runs-on: ubuntu-20.04
