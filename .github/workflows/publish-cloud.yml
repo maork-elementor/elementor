@@ -1,12 +1,21 @@
 name: Publish Cloud Version
 
+<<<<<<< HEAD
 on: [ workflow_dispatch ]
+=======
+on: 
+  workflow_dispatch:
+
+>>>>>>> 93634fc... test
 jobs:
   publish-to-cloud:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          repository: maork-elementor/elementor
+          ref: ED-7614
       - name: get configuration
         id: configuration
         uses: antifree/json-to-variables@v1.0.1

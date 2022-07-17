@@ -4,7 +4,12 @@ runs:
   using: "composite"
   steps:
     - run: |
-            if [[ ${{ env.config_users }} != *"${{ github.actor }}"* ]];then
+            msg = "Deployment can be performed by the user : ${{ github.actor }}"
+            if [[ ${{ env.envirement }} == "dev" ]];then
+               echo "$msg - Pass validation in the development environment"
+               exit 0
+            fi
+             if [[ ${{ env.config_deployment_permitted }} != *"${{ github.actor }}"* ]];then
                echo "::error::No deployment permissions have been granted to the user : ${{ github.actor }}"
                exit 1
             fi
@@ -12,8 +17,7 @@ runs:
                echo "::error::The deployment cannot start outside the elementor organization"
                exit 1
             fi
-            
-              echo "Deployment can be performed by the user : ${{ github.actor }}"
+              echo "$msg"
       shell: bash
 
 
