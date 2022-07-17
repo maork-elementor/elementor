@@ -1,0 +1,21 @@
+name: Push new version
+
+inputs:
+  MAINTAIN_USERNAME:
+    required: true
+  MAINTAIN_EMAIL:
+    required: true
+  PACKAGE_VERSION:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: "echo This is git push demo - PACKAGE_VERSION ${{ inputs.PACKAGE_VERSION }}"
+      shell: bash
+      
+# git config user.name ${inputs.MAINTAIN_USERNAME}
+# git config user.email ${inputs.MAINTAIN_EMAIL}
+# echo "Commit and push bump version ${inputs.PACKAGE_VERSION}"
+# git commit -am "Bump ${inputs.PACKAGE_VERSION}"
+# git push
