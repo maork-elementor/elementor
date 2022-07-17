@@ -1,6 +1,8 @@
 name: Publish Cloud Version
 
-on: [ workflow_dispatch ]
+on: 
+  workflow_dispatch:
+  
 jobs:
   publish-to-cloud:
     runs-on: ubuntu-20.04
