@@ -2,7 +2,15 @@ name: Publish Cloud Version
 
 on: 
   workflow_dispatch:
-  
+    inputs:
+      base-branch:
+        description: 'repository/branch'
+        required: true
+        default: 'elementor/master'
+      version:
+        description: 'Release branch version'
+        required: false
+
 jobs:
   publish-to-cloud:
     runs-on: ubuntu-20.04
