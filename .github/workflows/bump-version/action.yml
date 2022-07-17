@@ -1,7 +1,7 @@
 name: Bump version
 
 inputs:
-  VERSION_TAG_NAME:
+  CHANNEL:
     required: true
     
 runs:
@@ -10,7 +10,7 @@ runs:
     - run: |
             npm install --no-package-lock --no-save semver@7.3.4
             PREV_PACKAGE_VERSION=$(node -p "require('./package.json').version")
-            NEW_PACKAGE_VERSION=$(node ./.github/scripts/update-prerelease-version.js ${{ inputs.VERSION_TAG_NAME }})
+            NEW_PACKAGE_VERSION=$(node ./.github/scripts/update-prerelease-version.js ${{ inputs.CHANNEL }})
             PACKAGE_VERSION=$(node -p "require('./package.json').version")
             echo "PACKAGE_VERSION=${NEW_PACKAGE_VERSION}" >> $GITHUB_ENV
             echo "PACKAGE_VERSION : ${PACKAGE_VERSION}"

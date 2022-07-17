@@ -17,9 +17,6 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v3
-        with:
-          repository: maork-elementor/elementor
-          ref: ED-7614
       - name: get configuration
         id: configuration
         uses: antifree/json-to-variables@v1.0.1
@@ -37,7 +34,7 @@ jobs:
       - name: Bump version
         uses: ./.github/workflows/bump-version
         with:
-          VERSION_TAG_NAME: "cloud"
+          CHANNEL: "cloud"
       - name: Push version
         uses : ./.github/workflows/push-new-version
         with:
