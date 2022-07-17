@@ -1,4 +1,5 @@
 {
-  "users" : "amitaigat,arielk,avivu,bainternet,danielkatz,davseve,guyc-E,iNewLegend,KingYes,kobizz,ManorHazaz,maork-elementor,matipojo,nahmana,Nevoss,nisan250,nuritsha,ramiy,shilo-ey,StyleShit,Tzvi-ka,TzviRabinovitch,udidol",
+  "envirement": "dev", 
+  "deployment_permitted" : "ronkelementor,KingYes,shilo-ey,matipojo,",
   "repository" : "elementor"
 }

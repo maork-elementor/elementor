@@ -1,12 +1,17 @@
 name: Publish Cloud Version
 
-on: [push, pull_request, workflow_dispatch]
+on: 
+  workflow_dispatch:
+
 jobs:
   publish-to-cloud:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          repository: maork-elementor/elementor
+          ref: ED-7614
       - name: get configuration
         id: configuration
         uses: antifree/json-to-variables@v1.0.1
@@ -30,9 +35,9 @@ jobs:
           MAINTAIN_EMAIL: ${{ secrets.MAINTAIN_EMAIL }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
 
-#       - name: Send slack message
-#         uses: ./.github/workflows/slack-notify
-#         with:
-#           PACKAGE_VERSION: "TEST"
-#           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-#           SLACK_CHANNELS: ${{ 'C03PMU9HK24' }}
+      - name: Send slack message
+        uses: ./.github/workflows/slack-notify
+        with:
+          PACKAGE_VERSION: "TEST"
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_CHANNEL: ${{ 'C03PMU9HK24' }}
