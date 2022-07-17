@@ -15,8 +15,8 @@ runs:
                 NEXT_PACKAGE_VERSION=$(npx semver $PACKAGE_VERSION -i minor)
                 RELEASE_BRANCH="release/${NEXT_PACKAGE_VERSION}"
               else
-                echo "Version var is set to ${INPUT_VERSION}"
-                RELEASE_BRANCH="release/${INPUT_VERSION}"
+                echo "Version var is set to ${{ inputs.INPUT_VERSION }}"
+                RELEASE_BRANCH="release/${{ inputs.INPUT_VERSION }}"
               fi
               echo "RELEASE_BRANCH=${RELEASE_BRANCH}" >> $GITHUB_ENV
               echo "RELEASE_BRANCH : ${RELEASE_BRANCH}"
