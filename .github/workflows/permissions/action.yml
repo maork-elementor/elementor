@@ -4,9 +4,8 @@ runs:
   using: "composite"
   steps:
     - run: |
-            msg = "Deployment can be performed by the user : ${{ github.actor }}"
             if [[ ${{ env.envirement }} == "dev" ]];then
-               echo "$msg - Pass validation in the development environment"
+               echo "Pass validation in the development environment"
                exit 0
             fi
              if [[ ${{ env.config_deployment_permitted }} != *"${{ github.actor }}"* ]];then
@@ -17,7 +16,6 @@ runs:
                echo "::error::The deployment cannot start outside the elementor organization"
                exit 1
             fi
-              echo "$msg"
       shell: bash
 
 
