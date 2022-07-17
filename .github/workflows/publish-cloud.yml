@@ -6,7 +6,6 @@ on:
       version:
         description: 'Release branch version'
         required: false
-        default: $GITHUB_REF
 
 jobs:
   publish-to-cloud:
@@ -28,6 +27,8 @@ jobs:
           node-version: 14.x
       - name: Get next release branch
         uses: ./.github/workflows/get-next-release-branch
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
       - name: Bump version
         uses: ./.github/workflows/bump-version
         with:

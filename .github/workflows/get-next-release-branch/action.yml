@@ -1,10 +1,14 @@
 name: Get next release branch
 
+inputs:
+  INPUT_VERSION:
+    required: true
+
 runs:
   using: "composite"
   steps:
     - run: |
-            if [ -z "$INPUT_VERSION" ];
+            if [ -z "${{ inputs.INPUT_VERSION }}" ];
               then
                 PACKAGE_VERSION=$(node -p "require('./package.json').version")
                 npm install --no-package-lock --no-save semver@7.3.4
