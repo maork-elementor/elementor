@@ -48,7 +48,6 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.MAINTAIN_TOKEN }}
           ref: master
       - name: Install Node.js 14.x
         uses: actions/setup-node@v2
