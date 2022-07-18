@@ -1,8 +1,6 @@
 name: Generate changelog
 
 inputs:
-  TOKEN:
-    required: true
   REPOSITORY:
     required: true
   HEAD_BRANCH_NAME:
@@ -18,7 +16,7 @@ runs:
             node ./.github/scripts/generate-changelog.js
       shell: bash
       env:
-        TOKEN: ${{ inputs.TOKEN }}
+        TOKEN: ${{ env.GITHUB_TOKEN }}
         REPOSITORY: ${{ inputs.REPOSITORY }}
         HEAD_BRANCH_NAME: ${{ inputs.HEAD_BRANCH_NAME }}
         BASE_TAG_NAME: ${{ inputs.BASE_TAG_NAME }}
