@@ -8,7 +8,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-            if [ -z "${{ inputs.INPUT_VERSION }}" ];
+            if [ "${{ inputs.INPUT_VERSION }}" == "" ];
               then
                 PACKAGE_VERSION=$(node -p "require('./package.json').version")
                 npm install --no-package-lock --no-save semver@7.3.4
