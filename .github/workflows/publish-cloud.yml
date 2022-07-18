@@ -8,7 +8,7 @@ on:
         required: false
 
 jobs:
-  publish-to-cloud:
+  bump-version:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout branch
@@ -41,10 +41,37 @@ jobs:
           MAINTAIN_USERNAME: "maor-k-CI"
           MAINTAIN_EMAIL: "maor-k@elementor.com"
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-
-      - name: Send slack message
-        uses: ./.github/workflows/slack-notify
+  publish-to-cloud:
+    needs: bump-version
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
         with:
-          MESSAGE: "@here Elementor ${{ env.PACKAGE_VERSION }} has been released! Saddle up partners! :tada:"
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-          SLACK_CHANNEL: ${{ 'C03PMU9HK24' }}
+          token: ${{ secrets.MAINTAIN_TOKEN }}
+          ref: master
+      - name: Install Node.js 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - name: Get next release branch
+        uses: ./.github/workflows/get-next-release-branch
+        with:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+      - name: Checkout next release branch
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MAINTAIN_TOKEN }}
+          ref: ${{ env.RELEASE_BRANCH }}
+      - name: Install Dependencies
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+          npm ci
+
+      # - name: Send slack message
+      #   uses: ./.github/workflows/slack-notify
+      #   with:
+      #     MESSAGE: "@here Elementor ${{ env.PACKAGE_VERSION }} has been released! Saddle up partners! :tada:"
+      #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      #     SLACK_CHANNEL: ${{ 'C03PMU9HK24' }}
