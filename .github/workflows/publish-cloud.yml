@@ -47,8 +47,6 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v3
-        with:
-          ref: master
       - name: Install Node.js 14.x
         uses: actions/setup-node@v2
         with:
