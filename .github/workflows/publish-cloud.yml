@@ -56,9 +56,8 @@ jobs:
         with:
           INPUT_VERSION: ${{ github.event.inputs.version }}
       - name: Checkout next release branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          token: ${{ secrets.MAINTAIN_TOKEN }}
           ref: ${{ env.RELEASE_BRANCH }}
       - name: Install Dependencies
         run: |
