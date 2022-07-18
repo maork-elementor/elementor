@@ -10,6 +10,8 @@ on:
 jobs:
   bump-version:
     runs-on: ubuntu-20.04
+    outputs:
+      prev_version: ${{ steps.bump_version_step.outputs.prev_version }}
     steps:
       - name: Checkout branch
         uses: actions/checkout@v3
@@ -30,6 +32,7 @@ jobs:
         with:
           INPUT_VERSION: ${{ github.event.inputs.version }}
       - name: Bump version
+        id: bump_version_step
         uses: ./.github/workflows/bump-version
         with:
           CHANNEL: "cloud"
@@ -57,8 +60,8 @@ jobs:
           INPUT_VERSION: ${{ github.event.inputs.version }}
       - name: Checkout next release branch
         uses: actions/checkout@v3
-        # with:
-          #ref: ${{ env.RELEASE_BRANCH }}
+        with:
+          ref: ${{ env.RELEASE_BRANCH }}
       - name: Install Dependencies
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
@@ -68,6 +71,38 @@ jobs:
         uses: ./.github/workflows/build-plugin
         with:
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+      - name: Upload zip file to GitHub actions artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: elementor-${{ env.PACKAGE_VERSION }}
+          path: ${{ github.workspace }}/elementor/**/*
+          if-no-files-found: error
+      - name: Create Git tag
+        uses : ./.github/workflows/create-tag
+        with:
+          # MAINTAIN_USERNAME: ${{ secrets.MAINTAIN_USERNAME }}
+          # MAINTAIN_EMAIL: ${{ secrets.MAINTAIN_EMAIL }}
+          MAINTAIN_USERNAME: "maor-k-CI"
+          MAINTAIN_EMAIL: "maor-k@elementor.com"
+          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+      - name: Generate changelog
+        env:
+          TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          HEAD_BRANCH_NAME: v${{ env.PACKAGE_VERSION }}
+          BASE_TAG_NAME: v${{ needs.bump-version.outputs.prev_version }}
+        run: |
+          npm install --no-package-lock --no-save @octokit/core@3.4.0
+          node ./.github/scripts/generate-changelog.js
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.PACKAGE_VERSION }}
+          files: elementor-*.zip
+          prerelease: true
+          body_path: temp-changelog.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
       # - name: Send slack message
       #   uses: ./.github/workflows/slack-notify
       #   with:
