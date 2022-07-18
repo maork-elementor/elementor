@@ -12,10 +12,10 @@ runs:
   using: "composite"
   steps:
     - run: |
-            git config user.name ${inputs.MAINTAIN_USERNAME}
-            git config user.email ${inputs.MAINTAIN_EMAIL}
-            echo "Commit and push bump version ${inputs.PACKAGE_VERSION}"
-            git commit -am "Bump ${inputs.PACKAGE_VERSION}"
+            git config user.name ${{ inputs.MAINTAIN_USERNAME }}
+            git config user.email ${{ inputs.MAINTAIN_EMAIL }}
+            echo "Commit and push bump version ${{ inputs.PACKAGE_VERSION }}"
+            git commit -am "Bump ${{ inputs.PACKAGE_VERSION }}"
             git push
       shell: bash
       
