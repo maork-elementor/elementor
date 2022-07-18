@@ -1,0 +1,24 @@
+name: Build plugin
+
+inputs:
+  PACKAGE_VERSION:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+            if [[ -z "$PACKAGE_VERSION" ]]; then
+              echo "Missing PACKAGE_VERSION env var"
+              exit 1
+            fi
+            sed -i -E "s/Stable tag: .*/Stable tag: ${PACKAGE_VERSION}/g" ./readme.txt
+            sed -i -E "s/Version: .*/Version: ${PACKAGE_VERSION}/g" elementor.php
+            sed -i -E "s/ELEMENTOR_VERSION', '.*'/ELEMENTOR_VERSION', '${PACKAGE_VERSION}'/g" elementor.php
+            PLUGIN_ZIP_FILENAME="elementor-${PACKAGE_VERSION}.zip"
+            npx grunt build
+            mv build elementor
+            zip -r $PLUGIN_ZIP_FILENAME elementor
+            echo "PLUGIN_ZIP_FILENAME=${PLUGIN_ZIP_FILENAME}" >> $GITHUB_ENV
+            echo "PLUGIN_ZIP_FILENAME=${PLUGIN_ZIP_FILENAME}"
+      shell: bash
