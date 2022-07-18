@@ -86,14 +86,12 @@ jobs:
           MAINTAIN_EMAIL: "maor-k@elementor.com"
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
       - name: Generate changelog
-        env:
+        uses : ./.github/workflows/generate-changelog
+        with:
           TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           HEAD_BRANCH_NAME: v${{ env.PACKAGE_VERSION }}
           BASE_TAG_NAME: v${{ needs.bump-version.outputs.prev_version }}
-        run: |
-          npm install --no-package-lock --no-save @octokit/core@3.4.0
-          node ./.github/scripts/generate-changelog.js
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
