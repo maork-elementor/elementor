@@ -4,6 +4,10 @@ inputs:
   CHANNEL:
     required: true
     
+outputs:
+  prev_version:
+    value: ${{ steps.bump_version_step.outputs.prev_version }}
+
 runs:
   using: "composite"
   steps:
@@ -17,3 +21,4 @@ runs:
             echo "::set-output name=prev_version::${PREV_PACKAGE_VERSION}"
             echo "PACKAGE_VERSION : ${PACKAGE_VERSION}"
       shell: bash
+      id: bump_version_step
