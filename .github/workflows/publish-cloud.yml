@@ -91,7 +91,7 @@ jobs:
           TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           HEAD_BRANCH_NAME: v${{ env.PACKAGE_VERSION }}
-          BASE_TAG_NAME: v${{ needs.bump-version.outputs.prev_version }}
+          BASE_TAG_NAME: v${{ env.PREV_PACKAGE_VERSION }}
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
