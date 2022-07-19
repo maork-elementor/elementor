@@ -14,8 +14,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-            npm install --no-package-lock --no-save semver@7.3.4 @octokit/core@3.4.0
-            PREV_PACKAGE_VERSION=$(node -p "require('./package.json').last_cloud_version")
+            npm install --no-package-lock --no-save @octokit/core@3.4.0
             node ./.github/scripts/generate-changelog.js
       shell: bash
       env:

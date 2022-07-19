@@ -8,6 +8,7 @@ const preId = process.argv[2];
 if (!['dev', 'beta', 'cloud' ].includes(preId)) {
 	console.error('missing argument dev or beta mode');
 	process.exit(1);
+	return;
 }
 
 const bumpVersion = (relativeVersion, lastVersionTagName, bumpsFromCurrentVersion = 1) => {
@@ -26,6 +27,7 @@ const bumpVersion = (relativeVersion, lastVersionTagName, bumpsFromCurrentVersio
 			if (Number.isNaN(currentLastVersionNumber)) {
 				console.error(`invalid ${preId} version: ${currentLastVersion}`);
 				process.exit(1);
+				return;
 			}
 		}
 	}
@@ -43,8 +45,8 @@ if (preId === 'beta') {
 }
 
 if (preId === 'cloud') {
-	const relativeVersion = packageJson.last_cloud_version;
-	bumpVersion(relativeVersion, 'last_cloud_version');
+	const relativeVersion = packageJson.version;
+	bumpVersion(relativeVersion, 'version');
 	return;
 }
 
