@@ -10,6 +10,8 @@ on:
 jobs:
   bump-version:
     runs-on: ubuntu-20.04
+    outputs:
+      prev_version: ${{ steps.bump_version_step.outputs.prev_version }}
     steps:
       - name: Checkout branch
         uses: actions/checkout@v3
@@ -30,6 +32,7 @@ jobs:
         with:
           INPUT_VERSION: ${{ github.event.inputs.version }}
       - name: Bump version
+        id: bump_version_step
         uses: ./.github/workflows/bump-version
         with:
           CHANNEL: "cloud"
@@ -89,7 +92,7 @@ jobs:
           TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           HEAD_BRANCH_NAME: v${{ env.PACKAGE_VERSION }}
-          BASE_TAG_NAME: v${{ steps.bump_version_step.outputs.prev_version }}
+          BASE_TAG_NAME: v${{ needs.bump_version_step.outputs.prev_version }}
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
