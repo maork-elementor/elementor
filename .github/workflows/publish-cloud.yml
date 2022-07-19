@@ -60,8 +60,8 @@ jobs:
           INPUT_VERSION: ${{ github.event.inputs.version }}
       - name: Checkout next release branch
         uses: actions/checkout@v3
-        # with:
-        #   ref: ${{ env.RELEASE_BRANCH }}
+        with:
+          ref: ${{ env.RELEASE_BRANCH }}
       - name: Install Dependencies
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').last_cloud_version")
