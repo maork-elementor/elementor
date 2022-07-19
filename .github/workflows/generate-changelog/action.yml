@@ -7,8 +7,6 @@ inputs:
     required: true
   HEAD_BRANCH_NAME:
     required: true
-  BASE_TAG_NAME:
-    required: true
 
 runs:
   using: "composite"
@@ -21,4 +19,4 @@ runs:
         TOKEN: ${{ inputs.TOKEN }}
         REPOSITORY: ${{ inputs.REPOSITORY }}
         HEAD_BRANCH_NAME: ${{ inputs.HEAD_BRANCH_NAME }}
-        BASE_TAG_NAME: ${{ inputs.BASE_TAG_NAME }}
+        BASE_TAG_NAME: ${{ env.PREV_PACKAGE_VERSION}}
