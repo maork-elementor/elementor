@@ -101,9 +101,9 @@ jobs:
           body_path: temp-changelog.txt
         env:
           GITHUB_TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
-      # - name: Send slack message
-      #   uses: ./.github/workflows/slack-notify
-      #   with:
-      #     MESSAGE: "@here Elementor ${{ env.PACKAGE_VERSION }} has been released! Saddle up partners! :tada:"
-      #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      #     SLACK_CHANNEL: ${{ 'C03PMU9HK24' }}
+      - name: Send slack message
+        uses: ./.github/workflows/slack-notify
+        with:
+          MESSAGE: "@here Elementor ${{ env.PACKAGE_VERSION }} has been released! Saddle up partners! :tada: \n https://github.com/${{ github.repository }}/releases/tag/v${{ env.PACKAGE_VERSION }}"
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_CHANNEL: ${{ 'C03PMU9HK24' }}
