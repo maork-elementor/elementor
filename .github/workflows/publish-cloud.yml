@@ -47,7 +47,7 @@ jobs:
 
   publish-to-cloud:
     needs: bump-version
-    if: ${{ needs.bump_version_step.outputs.prev_version != "" }}
+    if: ${{ needs.bump_version_step.outputs.prev_version != '' }}
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout branch
