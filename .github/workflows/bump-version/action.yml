@@ -1,4 +1,5 @@
 name: Bump version
+description: Update package.json with the new version number & Sets the version as ENV variable.
 
 inputs:
   CHANNEL:

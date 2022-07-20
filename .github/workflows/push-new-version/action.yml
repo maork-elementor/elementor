@@ -1,4 +1,5 @@
 name: Push new version
+description: Commit and push the new version to the remote repository after the "Bump version" workflow has been completed.
 
 inputs:
   MAINTAIN_USERNAME:
@@ -19,4 +20,3 @@ runs:
             git push
       shell: bash
       
-

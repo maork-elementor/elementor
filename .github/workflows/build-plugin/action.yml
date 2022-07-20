@@ -1,4 +1,5 @@
 name: Build plugin
+description: Clean readme file and filter out unwanted content, The plugin will be built and uploaded to the Github artifacts directory.
 
 inputs:
   PACKAGE_VERSION:
