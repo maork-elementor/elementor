@@ -1,4 +1,5 @@
 name: Slack Version Notify
+description: Send a notification to a Slack channel.
 
 inputs:
   MESSAGE:

@@ -1,4 +1,5 @@
-name: Create tag
+name: Create Git Tag
+description: Generate a new tag and push it to the remote repository.
 
 inputs:
   MAINTAIN_USERNAME:

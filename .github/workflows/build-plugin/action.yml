@@ -1,4 +1,5 @@
-name: Build plugin
+name: Build Plugin
+description: Inject the given version into the plugin files and then build it and zip it.
 
 inputs:
   PACKAGE_VERSION:
@@ -8,10 +9,6 @@ runs:
   using: "composite"
   steps:
     - run: |
-            if [[ -z "$PACKAGE_VERSION" ]]; then
-              echo "Missing PACKAGE_VERSION env var"
-              exit 1
-            fi
             sed -i -E "s/Stable tag: .*/Stable tag: ${PACKAGE_VERSION}/g" ./readme.txt
             sed -i -E "s/Version: .*/Version: ${PACKAGE_VERSION}/g" elementor.php
             sed -i -E "s/ELEMENTOR_VERSION', '.*'/ELEMENTOR_VERSION', '${PACKAGE_VERSION}'/g" elementor.php
