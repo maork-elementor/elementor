@@ -23,10 +23,10 @@ jobs:
             prefix: config
       - name: Test permissions
         uses: ./.github/workflows/permissions
-      - name: Install Node.js 14.x
+      - name: Install Node.js 16.x
         uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: 16.x
       - name: Get next release branch
         uses: ./.github/workflows/get-next-release-branch
         with:
@@ -43,17 +43,17 @@ jobs:
           # MAINTAIN_EMAIL: ${{ secrets.MAINTAIN_EMAIL }}
           MAINTAIN_USERNAME: "maor-k-CI"
           MAINTAIN_EMAIL: "maor-k@elementor.com"
-          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+          COMMIT_MESSAGE: "Bump ${{ inputs.PACKAGE_VERSION }}"
   publish-to-cloud:
     needs: bump-version
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout branch
         uses: actions/checkout@v3
-      - name: Install Node.js 14.x
+      - name: Install Node.js 16.x
         uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: 16.x
       - name: Get next release branch
         uses: ./.github/workflows/get-next-release-branch
         with:
@@ -106,4 +106,4 @@ jobs:
         with:
           MESSAGE: "@here Elementor ${{ env.PACKAGE_VERSION }} has been released! Saddle up partners! :tada:"
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-          SLACK_CHANNEL: ${{ 'C03PMU9HK24' }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNELS }}

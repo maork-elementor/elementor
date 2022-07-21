@@ -1,4 +1,4 @@
-name: Bump version
+name: Bump Version
 description: Update package.json with the new version number & Sets the version as ENV variable.
 
 inputs:

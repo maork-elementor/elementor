@@ -1,4 +1,4 @@
-name: Validate user permissions 
+name: Validate User Permissions 
 description: Validate user permissions for the current repository & run the workflow.
 
 runs:

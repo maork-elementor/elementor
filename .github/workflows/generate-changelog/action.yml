@@ -1,4 +1,4 @@
-name: Generate changelog
+name: Generate Changelog
 description: Generate a changelog for the current version with the last version as the base.
 
 inputs:

@@ -1,12 +1,12 @@
-name: Push new version
-description: Commit and push the new version to the remote repository after the "Bump version" workflow has been completed.
+name: Push New Version
+description: Git push the new version to the remote repository.
 
 inputs:
   MAINTAIN_USERNAME:
     required: true
   MAINTAIN_EMAIL:
     required: true
-  PACKAGE_VERSION:
+  COMMIT_MESSAGE:
     required: true
 
 runs:
@@ -15,8 +15,7 @@ runs:
     - run: |
             git config user.name ${{ inputs.MAINTAIN_USERNAME }}
             git config user.email ${{ inputs.MAINTAIN_EMAIL }}
-            echo "Commit and push bump version ${{ inputs.PACKAGE_VERSION }}"
-            git commit -am "Bump ${{ inputs.PACKAGE_VERSION }}"
+            git commit -am "${{ inputs.COMMIT_MESSAGE }}"
             git push
       shell: bash
       

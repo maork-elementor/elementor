@@ -1,4 +1,4 @@
-name: Get next release branch
+name: Get Next Release Branch
 description: Get the next release branch version channel & number and increment it. Sets the version as ENV variable.
 
 inputs:
