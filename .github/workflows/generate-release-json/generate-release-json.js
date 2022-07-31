@@ -16,17 +16,22 @@ const octokit = new Octokit({ auth: TOKEN });
 		);
 
 		const cloudReleases = releases.data.find(release => release.tag_name.includes('cloud'));
+		if(!cloudReleases) {
+			throw new Error(`No releases found with tag name containing "cloud"`);
+		}
+
+		const releasesJson = JSON.stringify(cloudReleases, null, 2);
 		const releasesJsonSha = await octokit.request(
 			'PUT /repos/{owner}/{repo}/contents/releases.json',
 			{
 				owner, repo },
 			{
-				body: JSON.stringify({
+				body: {
 					message: `Update releases.json`,
-					content: cloudReleases,
+					content: releasesJson,
 					sha: cloudReleases.sha,
 					branch: BRANCH
-				})
+				}
 			}
 		);
 		console.log(`Releases.json updated with sha ${releasesJsonSha.data.content.sha}`);
