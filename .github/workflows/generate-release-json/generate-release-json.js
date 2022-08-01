@@ -25,8 +25,8 @@ const octokit = new Octokit({ auth: TOKEN });
 		const options = {
 			owner,
 			repo,
-			path: `cloudReleases.json`,
-			message: `Update cloudReleases.json`,
+			path: `releases/cloud.json`,
+			message: `releases/cloud.json`,
 			content: contentEncoded,
 			committer: {
 				name: MAINTAIN_USERNAME,
@@ -41,7 +41,7 @@ const octokit = new Octokit({ auth: TOKEN });
 		console.log(options);
 		const { data } = await octokit.rest.repos.createOrUpdateFileContents(options);
 		console.log(data);
-		console.log(`cloudReleases updated`);
+		console.log(`releases/cloud.json updated`);
 	} catch (err) {
 		console.error(`Failed to update cloudReleases.json: ${err}`);
 		process.exit(1);
