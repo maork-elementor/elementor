@@ -10,7 +10,7 @@ const octokit = new Octokit({ auth: TOKEN });
 	try {
 
 		const { owner, repo } = repoToOwnerAndOwner(REPOSITORY);
-		const releases = octokit.rest.repos.listReleases({
+		const releases = await octokit.rest.repos.listReleases({
 			owner,
 			repo,
 			per_page: 100
