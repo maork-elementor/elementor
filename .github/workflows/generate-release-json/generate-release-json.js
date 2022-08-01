@@ -24,13 +24,17 @@ const octokit = new Octokit({ auth: TOKEN });
 		console.log(releasesJson);
 		const contentEncoded = Buffer.from(releasesJson).toString('base64');
 
-		const sha = await octokit.rest.git.getBlob({
+		const commit = await octokit.rest.repos.getCommit({
 			owner,
 			repo,
-			file_path: 'releases/cloud.json',
 			ref: BRANCH
 		});
-
+		const blob = await octokit.rest.git.getBlob({
+			owner,
+			repo,
+			file_sha: commit.data.sha
+		});
+		const blobSha = blob.data.sha;
 		const options = {
 			owner,
 			repo,
@@ -46,7 +50,7 @@ const octokit = new Octokit({ auth: TOKEN });
 				email: MAINTAIN_EMAIL,
 			},
 			branch: BRANCH,
-			sha: sha.data.sha
+			sha: blobSha
 		};
 		console.log(options);
 		const { data } = await octokit.rest.repos.createOrUpdateFileContents(options);
