@@ -10,6 +10,8 @@ inputs:
     required: true
   IGNORE_CHECKS_LIST:
     required: false
+  ENVIRONMENT:
+    required: false
 
 runs:
   using: "composite"
@@ -20,6 +22,7 @@ runs:
         REPOSITORY: ${{ inputs.REPOSITORY }}
         CURRENT_SHA: ${{ inputs.CURRENT_SHA }}
         IGNORE_CHECKS_LIST: ${{ inputs.IGNORE_CHECKS_LIST }}
+        ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
       run: |
             npm install --no-package-lock --no-save @octokit/core@3.4.0
             node .github/workflows/validate-run-checks/validate-run-checks.js
