@@ -70,6 +70,7 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           CURRENT_SHA: ${{ github.sha }}
           IGNORE_CHECKS_LIST: "publish-to-cloud" # Comma separated list of checks to ignore
+          ENVIRONMENT: ${{ env.config_deployment_envirement }}
       - name: Install Dependencies
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').last_cloud_version")
