@@ -115,6 +115,7 @@ jobs:
           BRANCH: ${{ secrets.JSON_BRANCH }} # Branch to generate JSON from
           MAINTAIN_USERNAME: ${{ secrets.MAINTAIN_USERNAME }}
           MAINTAIN_EMAIL: ${{ secrets.MAINTAIN_EMAIL }}
+          TAG_NAME_FILTER: "cloud"
       - name: Send slack message
         uses: ./.github/workflows/slack-notify
         with:
