@@ -16,7 +16,6 @@ const octokit = new Octokit({ auth: TOKEN });
 		});
 		console.log(releases);
 		let cloudReleases = releases.data.filter(release => release.tag_name.includes(TAG_NAME_FILTER));
-		cloudReleases = cloudReleases.slice(0, 10);
 		if (!cloudReleases) {
 			throw new Error(`No releases found with tag name containing "${TAG_NAME_FILTER}"`);
 		}
@@ -24,6 +23,13 @@ const octokit = new Octokit({ auth: TOKEN });
 		const releasesJson = JSON.stringify(cloudReleases, null, 2);
 		console.log(releasesJson);
 		const contentEncoded = Buffer.from(releasesJson).toString('base64');
+		const sha = await octokit.git.createBlob({
+			owner,
+			repo,
+			content: contentEncoded,
+			encoding: 'base64'
+		});
+
 		const options = {
 			owner,
 			repo,
@@ -39,6 +45,7 @@ const octokit = new Octokit({ auth: TOKEN });
 				email: MAINTAIN_EMAIL,
 			},
 			branch: BRANCH,
+			sha: sha.data.sha
 		};
 		console.log(options);
 		const { data } = await octokit.rest.repos.createOrUpdateFileContents(options);
