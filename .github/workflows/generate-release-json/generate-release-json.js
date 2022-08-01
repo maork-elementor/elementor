@@ -15,7 +15,8 @@ const octokit = new Octokit({ auth: TOKEN });
 			per_page: 100
 		});
 		console.log(releases);
-		const cloudReleases = releases.data.filter(release => release.tag_name.includes(TAG_NAME_FILTER));
+		let cloudReleases = releases.data.filter(release => release.tag_name.includes(TAG_NAME_FILTER));
+		cloudReleases = cloudReleases.slice(0, 15);
 		if (!cloudReleases) {
 			throw new Error(`No releases found with tag name containing "${TAG_NAME_FILTER}"`);
 		}
