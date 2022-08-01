@@ -1,16 +1,18 @@
 'use strict';
 
-const { repoToOwnerAndOwner, getPrCommits } = require('../../scripts/repo-utils');
-const { Octokit } = require("@octokit/rest");
+const { repoToOwnerAndOwner } = require('../../scripts/repo-utils');
+const OctokitCore = { octokit } = require('@octokit/core');
+const OctokitRest = { octokit } = require('@octokit/rest');
 
 const { REPOSITORY, BRANCH, TOKEN, MAINTAIN_USERNAME , MAINTAIN_EMAIL } = process.env;
-const octokit = new Octokit({ auth: TOKEN });
+const octokitCoreInstance = new OctokitCore({ auth: TOKEN });
+const octokitRestInstance = new OctokitRest({ auth: TOKEN });
 
 (async () => {
 	try {
 
 		const { owner, repo } = repoToOwnerAndOwner(REPOSITORY);
-		const releases = await octokit.request(
+		const releases = await octokitCoreInstance.request(
 			'GET /repos/{owner}/{repo}/releases?per_page=100',
 			{ owner, repo }
 		);
@@ -23,7 +25,7 @@ const octokit = new Octokit({ auth: TOKEN });
 		const releasesJson = JSON.stringify(cloudReleases, null, 2);
 		console.log(releasesJson);
 		const contentEncoded = Buffer.from(releasesJson).toString('base64');
-		const { data } = await octokit.repos.createOrUpdateFileContents({
+		const { data } = await octokitRestInstance.repos.createOrUpdateFileContents({
 			owner,
 			repo: REPOSITORY,
 			path: `cloudReleases.json`,
