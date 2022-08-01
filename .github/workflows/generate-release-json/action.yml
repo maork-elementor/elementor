@@ -33,3 +33,6 @@ runs:
       run: |
             npm install --no-package-lock --no-save @octokit/rest@19.0.3
             node .github/workflows/generate-release-json/generate-release-json.js
+            git add releases/*.json
+            git commit -am "Generate release JSON"
+            git push origin ${{ inputs.BRANCH }}
