@@ -25,7 +25,7 @@ const octokit = new Octokit({ auth: TOKEN });
 		const options = {
 			owner,
 			repo,
-			path: `repos/${owner}/${repo}/contents/cloudReleases.json`,
+			path: `cloudReleases.json`,
 			message: `Update cloudReleases.json`,
 			content: contentEncoded,
 			committer: {
