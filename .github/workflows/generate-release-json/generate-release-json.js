@@ -2,7 +2,7 @@
 
 const { repoToOwnerAndOwner } = require('../../scripts/repo-utils');
 const { Octokit } = require("@octokit/rest");
-const fs = require('fs');
+const { promises: fs } = require("fs");
 const { REPOSITORY, BRANCH, TOKEN, MAINTAIN_USERNAME , MAINTAIN_EMAIL, TAG_NAME_FILTER } = process.env;
 const octokit = new Octokit({ auth: TOKEN });
 
@@ -26,6 +26,7 @@ const octokit = new Octokit({ auth: TOKEN });
 		console.log(`Saving ${releasesFilePath}`);
 		await fs.writeFile(releasesFilePath, releasesJson);
 		console.log(`Saved ${releasesFilePath}`);
+		process.exit(0);
 	} catch (err) {
 		console.error(`Failed to update cloudReleases.json: ${err}`);
 		process.exit(1);
