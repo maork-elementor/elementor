@@ -3,7 +3,7 @@
 const { repoToOwnerAndOwner } = require('../../scripts/repo-utils');
 const { Octokit } = require("@octokit/rest");
 const { promises: fs } = require("fs");
-const { REPOSITORY, BRANCH, TOKEN, MAINTAIN_USERNAME , MAINTAIN_EMAIL, TAG_NAME_FILTER } = process.env;
+const { REPOSITORY, TOKEN, TAG_NAME_FILTER } = process.env;
 const octokit = new Octokit({ auth: TOKEN });
 
 (async () => {

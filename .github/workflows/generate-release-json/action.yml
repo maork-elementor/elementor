@@ -1,5 +1,5 @@
 name: Generate Release JSON
-description: Validate run checks for the current version.
+description: Generate a new release JSON file for { TAG_NAME_FILTER }
 
 inputs:
   TOKEN:
