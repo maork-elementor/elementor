@@ -22,9 +22,9 @@ const octokit = new Octokit({ auth: TOKEN });
 		const releasesJson = JSON.stringify(cloudReleases, null, 2);
 		console.log(releasesJson);
 		const contentEncoded = Buffer.from(releasesJson).toString('base64');
-		const { data } = await octokit.rest.repos.createOrUpdateFileContents({
+		const options = {
 			owner,
-			repo: REPOSITORY,
+			repo,
 			path: `cloudReleases.json`,
 			message: `Update cloudReleases.json`,
 			content: contentEncoded,
@@ -37,11 +37,13 @@ const octokit = new Octokit({ auth: TOKEN });
 				email: MAINTAIN_EMAIL,
 			},
 			branch: BRANCH,
-		});
+		};
+		console.log(options);
+		const { data } = await octokit.rest.repos.createOrUpdateFileContents(options);
 		console.log(data);
-		console.log(`Releases.json updated with sha ${releasesJsonSha.data.content.sha}`);
+		console.log(`cloudReleases updated`);
 	} catch (err) {
-		console.error(`Failed to update releases.json: ${err}`);
+		console.error(`Failed to update cloudReleases.json: ${err}`);
 		process.exit(1);
 	}
 })();
