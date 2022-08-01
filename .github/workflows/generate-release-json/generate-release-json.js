@@ -1,10 +1,10 @@
 'use strict';
 
 const { repoToOwnerAndOwner } = require('../../scripts/repo-utils');
-const OctokitCore = { octokit } = require('@octokit/core');
-const OctokitRest = { octokit } = require('@octokit/rest');
+const OctokitCore = { Octokit } = require('@octokit/core');
+const OctokitRest = { Octokit } = require('@octokit/rest');
 
-const { REPOSITORY, BRANCH, TOKEN, MAINTAIN_USERNAME , MAINTAIN_EMAIL } = process.env;
+const { REPOSITORY, BRANCH, TOKEN, MAINTAIN_USERNAME , MAINTAIN_EMAIL, TAG_NAME_FILTER } = process.env;
 const octokitCoreInstance = new OctokitCore({ auth: TOKEN });
 const octokitRestInstance = new OctokitRest({ auth: TOKEN });
 
@@ -17,9 +17,9 @@ const octokitRestInstance = new OctokitRest({ auth: TOKEN });
 			{ owner, repo }
 		);
 
-		const cloudReleases = releases.data.find(release => release.tag_name.includes('cloud'));
+		const cloudReleases = releases.data.find(release => release.tag_name.includes(TAG_NAME_FILTER));
 		if (!cloudReleases) {
-			throw new Error(`No releases found with tag name containing "cloud"`);
+			throw new Error(`No releases found with tag name containing "${TAG_NAME_FILTER}"`);
 		}
 
 		const releasesJson = JSON.stringify(cloudReleases, null, 2);
