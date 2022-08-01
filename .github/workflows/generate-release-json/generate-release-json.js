@@ -16,10 +16,11 @@ const octokit = new Octokit({ auth: TOKEN });
 		});
 		console.log(releases);
 		let cloudReleases = releases.data.filter(release => release.tag_name.includes(TAG_NAME_FILTER));
-		cloudReleases = cloudReleases.slice(0, 15);
+		cloudReleases = cloudReleases.slice(0, 10);
 		if (!cloudReleases) {
 			throw new Error(`No releases found with tag name containing "${TAG_NAME_FILTER}"`);
 		}
+		console.log(`slice to ${cloudReleases.length}`);
 		const releasesJson = JSON.stringify(cloudReleases, null, 2);
 		console.log(releasesJson);
 		const contentEncoded = Buffer.from(releasesJson).toString('base64');
