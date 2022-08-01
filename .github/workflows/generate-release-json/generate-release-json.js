@@ -1,7 +1,7 @@
 'use strict';
 
 const { repoToOwnerAndOwner, getPrCommits } = require('../../scripts/repo-utils');
-const { Octokit } = require("@octokit/core");
+const { Octokit } = require("@octokit/rest");
 
 const { REPOSITORY, BRANCH, TOKEN, MAINTAIN_USERNAME , MAINTAIN_EMAIL } = process.env;
 const octokit = new Octokit({ auth: TOKEN });
