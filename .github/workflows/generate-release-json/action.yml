@@ -31,5 +31,5 @@ runs:
         MAINTAIN_EMAIL: ${{ inputs.MAINTAIN_EMAIL }}
         TAG_NAME_FILTER: ${{ inputs.TAG_NAME_FILTER }}
       run: |
-            npm install --no-package-lock --no-save @octokit/core@3.4.0 @octokit/rest@19.0.3
+            npm install --no-package-lock --no-save @octokit/rest@19.0.3
             node .github/workflows/generate-release-json/generate-release-json.js
