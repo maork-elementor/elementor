@@ -10,8 +10,6 @@ inputs:
     required: true
   IGNORE_CHECKS_LIST:
     required: false
-  ENVIRONMENT:
-    required: false
 
 runs:
   using: "composite"
