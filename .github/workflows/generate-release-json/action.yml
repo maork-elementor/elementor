@@ -33,6 +33,8 @@ runs:
       run: |
             npm install --no-package-lock --no-save @octokit/rest@19.0.3
             node .github/workflows/generate-release-json/generate-release-json.js
+            git config user.name ${{ inputs.MAINTAIN_USERNAME }}
+            git config user.email ${{ inputs.MAINTAIN_EMAIL }}
             git add releases/*.json
             git commit -am "Generate release JSON"
             git push origin ${{ inputs.BRANCH }}
