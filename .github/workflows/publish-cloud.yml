@@ -113,6 +113,8 @@ jobs:
           TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           BRANCH: ${{ secrets.JSON_BRANCH }} # Branch to generate JSON from
+          MAINTAIN_USERNAME: ${{ secrets.MAINTAIN_USERNAME }}
+          MAINTAIN_EMAIL: ${{ secrets.MAINTAIN_EMAIL }}
       - name: Send slack message
         uses: ./.github/workflows/slack-notify
         with:
