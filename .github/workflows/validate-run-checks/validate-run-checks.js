@@ -4,10 +4,6 @@ const { repoToOwnerAndOwner, getPrCommits } = require('../../scripts/repo-utils'
 const { Octokit } = require("@octokit/core");
 
 const { REPOSITORY, CURRENT_SHA , TOKEN , ENVIRONMENT } = process.env;
-if(ENVIRONMENT === 'dev') {
-	console.log('Skipping checks for dev environment');
-	process.exit(0);
-}
 const octokit = new Octokit({ auth: TOKEN });
 const IGNORE_CHECKS_LIST = process.env.IGNORE_CHECKS_LIST.split(',');
 
