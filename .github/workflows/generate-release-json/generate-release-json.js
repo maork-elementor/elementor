@@ -23,11 +23,12 @@ const octokit = new Octokit({ auth: TOKEN });
 		const releasesJson = JSON.stringify(cloudReleases, null, 2);
 		console.log(releasesJson);
 		const contentEncoded = Buffer.from(releasesJson).toString('base64');
-		const sha = await octokit.git.createBlob({
+
+		const sha = await octokit.rest.git.getBlob({
 			owner,
 			repo,
-			content: contentEncoded,
-			encoding: 'base64'
+			file_path: 'releases/cloud.json',
+			ref: BRANCH
 		});
 
 		const options = {
