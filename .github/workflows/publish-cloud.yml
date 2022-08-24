@@ -34,7 +34,7 @@ jobs:
         with:
           ENVIRONMENT: ${{ env.config_deployment_environment }}
           DEPLOYMENT_PERMITTED: ${{ env.config_deployment_permitted }}
-          DEPLOYMENT_REPOSITORY: ${{ github.config_deployment_repository }}
+          DEPLOYMENT_REPOSITORY_OWNER: ${{ env.config_deployment_repository_owner }}
       - name: Install Node.js 16.x
         uses: actions/setup-node@v2
         with:
@@ -42,7 +42,11 @@ jobs:
       - name: Get next release branch
         uses: ./.github/workflows/get-next-release-branch
         with:
-          INPUT_VERSION: ${{ github.event.client_payload.version || inputs.version }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+      - name: Checkout next release branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.RELEASE_BRANCH }}
       - name: Get Current SHA
         shell: bash
         run: |
@@ -52,9 +56,13 @@ jobs:
         uses : ./.github/workflows/validate-run-checks
         with:
           TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
-          REPOSITORY: ${{ github.event.client_payload.repository  || inputs.repository_name }}
+          REPOSITORY: ${{ github.repository }}
           CURRENT_SHA: ${{ env.CURRENT_SHA }}
           IGNORE_CHECKS_LIST: "publish-to-cloud" # Comma separated list of checks to ignore
+      - name: Checkout branch
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.MAINTAIN_TOKEN }}
       - name: Bump version
         id: bump_version_step
         uses: ./.github/workflows/bump-version
@@ -65,7 +73,7 @@ jobs:
         with:
           MAINTAIN_USERNAME: ${{ secrets.MAINTAIN_USERNAME }}
           MAINTAIN_EMAIL: ${{ secrets.MAINTAIN_EMAIL }}
-          COMMIT_MESSAGE: "Bump ${{ env.PACKAGE_VERSION || inputs.version }}"
+          COMMIT_MESSAGE: "Bump ${{ env.PACKAGE_VERSION }}"
   publish-to-cloud:
     needs: bump-version
     runs-on: ubuntu-20.04
@@ -113,7 +121,7 @@ jobs:
         uses : ./.github/workflows/generate-changelog
         with:
           TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
-          REPOSITORY: ${{ }
+          REPOSITORY: ${{ github.repository }}
           HEAD_BRANCH_NAME: v${{ env.PACKAGE_VERSION }}
           BASE_TAG_NAME: v${{ needs.bump-version.outputs.prev_version }}
       - name: Create GitHub release
@@ -121,7 +129,7 @@ jobs:
         with:
           tag_name: v${{ env.PACKAGE_VERSION }}
           files: elementor-*.zip
-          prerelease: ${{ inputs.pre_release }}
+          prerelease: ${{ github.event.inputs.pre_release }}
           body_path: temp-changelog.txt
         env:
           GITHUB_TOKEN: ${{ secrets.MAINTAIN_TOKEN }}
