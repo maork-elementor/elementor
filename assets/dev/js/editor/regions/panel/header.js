@@ -1,4 +1,5 @@
 var PanelHeaderItemView;
+import Notifications from './components/notifications-center/notifications-center';
 
 PanelHeaderItemView = Marionette.ItemView.extend( {
 	template: '#tmpl-elementor-panel-header',
@@ -10,6 +11,7 @@ PanelHeaderItemView = Marionette.ItemView.extend( {
 		menuIcon: '#elementor-panel-header-menu-button i',
 		title: '#elementor-panel-header-title',
 		addButton: '#elementor-panel-header-add-button',
+		notificationCenter: '#notification-center-wrapper',
 	},
 
 	events: {
@@ -35,6 +37,12 @@ PanelHeaderItemView = Marionette.ItemView.extend( {
 		} else {
 			$e.route( 'panel/menu' );
 		}
+	},
+	onRender() {
+		ReactDOM.render(
+			<Notifications />,
+			this.ui.notificationCenter[ 0 ],
+		);
 	},
 } );
 

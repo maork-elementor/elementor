@@ -68,6 +68,7 @@ $document = Plugin::$instance->documents->get( Plugin::$instance->editor->get_po
 		<span class="elementor-screen-only"><?php echo esc_html__( 'Menu', 'elementor' ); ?></span>
 	</div>
 	<div id="elementor-panel-header-title"></div>
+	<div id="notification-center-wrapper"></div>
 	<div id="elementor-panel-header-add-button" class="elementor-header-button">
 		<i class="elementor-icon eicon-apps tooltip-target" aria-hidden="true" data-tooltip="<?php esc_attr_e( 'Widgets Panel', 'elementor' ); ?>"></i>
 		<span class="elementor-screen-only"><?php echo esc_html__( 'Widgets Panel', 'elementor' ); ?></span>
