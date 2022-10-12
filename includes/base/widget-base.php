@@ -637,6 +637,9 @@ abstract class Widget_Base extends Element_Base {
 			 */
 			$widget_content = apply_filters( 'elementor/widget/render_content', $widget_content, $this );
 
+			
+
+
 			echo $widget_content; // XSS ok.
 			?>
 		</div>
@@ -731,7 +734,7 @@ abstract class Widget_Base extends Element_Base {
 			ob_start();
 
 			$this->render_content();
-
+			//mtest
 			$data['htmlCache'] = ob_get_clean();
 		}
 

@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 abstract class Element_Base extends Controls_Stack {
 
+	private $contentHtml = '';
 	/**
 	 * Child elements.
 	 *
@@ -402,6 +403,18 @@ abstract class Element_Base extends Controls_Stack {
 		return $this;
 	}
 
+	public function getHtmlCache($element) {
+		//for $element['elements'] recursively call this function
+		if (isset($element['elements'])) {
+			foreach ($element['elements'] as $key => $value) {
+				if(isset($value['htmlCache'])){
+					$this->contentHtml .= $value['htmlCache'];
+				}
+				$this->getHtmlCache($value);
+			}
+		}
+		
+	}
 	/**
 	 * Print element.
 	 *
@@ -437,17 +450,26 @@ abstract class Element_Base extends Controls_Stack {
 		 */
 		do_action( "elementor/frontend/{$element_type}/before_render", $this );
 
-		ob_start();
+		// ob_start();
 
-		if ( $this->has_own_method( '_print_content', self::class ) ) {
-			Plugin::$instance->modules_manager->get_modules( 'dev-tools' )->deprecation->deprecated_function( '_print_content', '3.1.0', __CLASS__ . '::print_content()' );
+		// if ( $this->has_own_method( '_print_content', self::class ) ) {
+		// 	Plugin::$instance->modules_manager->get_modules( 'dev-tools' )->deprecation->deprecated_function( '_print_content', '3.1.0', __CLASS__ . '::print_content()' );
 
-			$this->_print_content();
-		} else {
-			$this->print_content();
+		// 	$this->_print_content();
+		// } else {
+		// 	$this->print_content();
+		// }
+
+		//get $element['htmlCache'] from database
+		$content = '';
+		$element = $this->get_data();
+		$elements = $element['elements'];
+		for ($i=0; $i < count($elements); $i++) { 
+			$this->getHtmlCache($elements[$i]);
 		}
+		$content = $this->contentHtml;
 
-		$content = ob_get_clean();
+		// $content = ob_get_clean();
 
 		$should_render = ( ! empty( $content ) || $this->should_print_empty() );
 
@@ -544,7 +566,7 @@ abstract class Element_Base extends Controls_Stack {
 	}
 
 	public function get_data_for_save() {
-		$data = $this->get_raw_data();
+		$data = $this->get_raw_data(true);
 
 		$elements = [];
 
