@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
+use Elementor\Icons_Manager;
 
 /**
  * Elementor star rating widget.
@@ -355,17 +356,43 @@ class Widget_Star_Rating extends Widget_Base {
 		$rating_data = $this->get_rating();
 		$rating = (float) $rating_data[0];
 		$floored_rating = floor( $rating );
-		$stars_html = '';
+		$stars_html = '<div class="e-star-wrap">';
+
+		//get number of full stars in precentage of float rating. 5 stars is 100%
+		$rating_fraction = ( 1 - ( $rating - $floored_rating ) ) * 100;
+	
+		$icon_lib = 'star_fontawesome' == $icon ? 'fa' : 'eicons';
+		
 
 		for ( $stars = 1.0; $stars <= $rating_data[1]; $stars++ ) {
+			// if ( $stars <= $floored_rating ) {
+			// 	$stars_html .= '<i class="elementor-star-full">' . $icon . '</i>';
+			// } elseif ( $floored_rating + 1 === $stars && $rating !== $floored_rating ) {
+			// 	$stars_html .= '<i class="elementor-star-' . ( $rating - $floored_rating ) * 10 . '">' . $icon . '</i>';
+			// } else {
+			// 	$stars_html .= '<i class="elementor-star-empty">' . $icon . '</i>';
+			// }
+
 			if ( $stars <= $floored_rating ) {
-				$stars_html .= '<i class="elementor-star-full">' . $icon . '</i>';
+				// $stars_html .= '<i class="elementor-star-full">' . $icon . '</i>';
+				$icon = [
+					'library' => $icon_lib,
+					'value' => 'star_fontawesome' == $icon ? 'fa-star' : 'eicon-star',
+					'position' => 'left',
+				];
+				$stars_html .= Icons_Manager::render_icon( $icon, [ 'aria-hidden' => 'true','class' => 'e-star star-full' ] );
+
 			} elseif ( $floored_rating + 1 === $stars && $rating !== $floored_rating ) {
-				$stars_html .= '<i class="elementor-star-' . ( $rating - $floored_rating ) * 10 . '">' . $icon . '</i>';
+				// $stars_html .= '<i class="elementor-star-' . ( $rating - $floored_rating ) * 10 . '">' . $icon . '</i>';
 			} else {
-				$stars_html .= '<i class="elementor-star-empty">' . $icon . '</i>';
+				// $stars_html .= '<i class="elementor-star-empty">' . $icon . '</i>';
 			}
+
+
+			
 		}
+
+		$stars_html .= '</div>';
 
 		return $stars_html;
 	}
@@ -378,19 +405,7 @@ class Widget_Star_Rating extends Widget_Base {
 		$settings = $this->get_settings_for_display();
 		$rating_data = $this->get_rating();
 		$textual_rating = $rating_data[0] . '/' . $rating_data[1];
-		$icon = '&#xE934;';
 
-		if ( 'star_fontawesome' === $settings['star_style'] ) {
-			if ( 'outline' === $settings['unmarked_star_style'] ) {
-				$icon = '&#xE933;';
-			}
-		} elseif ( 'star_unicode' === $settings['star_style'] ) {
-			$icon = '&#9733;';
-
-			if ( 'outline' === $settings['unmarked_star_style'] ) {
-				$icon = '&#9734;';
-			}
-		}
 
 		$this->add_render_attribute( 'icon_wrapper', [
 			'class' => 'elementor-star-rating',
@@ -401,7 +416,7 @@ class Widget_Star_Rating extends Widget_Base {
 		] );
 
 		$schema_rating = '<span itemprop="ratingValue" class="elementor-screen-only">' . $textual_rating . '</span>';
-		$stars_element = '<div ' . $this->get_render_attribute_string( 'icon_wrapper' ) . '>' . $this->render_stars( $icon ) . ' ' . $schema_rating . '</div>';
+		$stars_element = '<div ' . $this->get_render_attribute_string( 'icon_wrapper' ) . '>' . $this->render_stars( $settings['star_style'] ) . ' ' . $schema_rating . '</div>';
 		?>
 
 		<div class="elementor-star-rating__wrapper">
