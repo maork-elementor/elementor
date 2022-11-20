@@ -8,6 +8,7 @@ use Elementor\Core\Utils\Http;
 use Elementor\Core\Utils\Str;
 use Elementor\Plugin;
 use Elementor\Tracker;
+use Elementor\Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -183,14 +184,15 @@ abstract class Base_App {
 			$this->redirect_to_admin_page();
 		}
 
-		if ( empty( $_REQUEST['state'] ) || $_REQUEST['state'] !== $this->get( 'state' ) ) {
+		$state = wp_verify_nonce( Utils::get_super_global_value( $_REQUEST, 'state' ) );
+		if ( empty( $state ) || $state !== $this->get( 'state' ) ) {
 			$this->add_notice( 'Get Token: Invalid Request.', 'error' );
 			$this->redirect_to_admin_page();
 		}
 
 		$response = $this->request( 'get_token', [
 			'grant_type' => 'authorization_code',
-			'code' => $_REQUEST['code'],
+			'code' => Utils::get_super_global_value( $_REQUEST, 'code' ),
 			'redirect_uri' => rawurlencode( $this->get_admin_url( 'get_token' ) ),
 			'client_id' => $this->get( 'client_id' ),
 		] );
@@ -600,11 +602,11 @@ abstract class Base_App {
 	 * @access protected
 	 */
 	protected function set_client_id() {
+		$source = wp_verify_nonce( Utils::get_super_global_value( $_REQUEST, 'source' ) );
 		$response = $this->request(
 			'get_client_id',
 			[
-				// phpcs:ignore WordPress.Security.NonceVerification
-				'source' => isset( $_REQUEST['source'] ) ? esc_attr( $_REQUEST['source'] ) : '',
+				'source' => isset( $source ) ? esc_attr( $source ) : '',
 			]
 		);
 
@@ -640,7 +642,7 @@ abstract class Base_App {
 		<script>
 			if ( opener && opener !== window ) {
 				opener.jQuery( 'body' ).trigger(
-					'elementor/connect/success/<?php echo esc_attr( $_REQUEST['callback_id'] ); ?>',
+					'elementor/connect/success/<?php echo esc_attr( wp_verify_nonce( Utils::get_super_global_value( $_REQUEST, 'callback_id' ) ) ); ?>',
 					<?php echo wp_json_encode( $data ); ?>
 				);
 
@@ -685,7 +687,7 @@ abstract class Base_App {
 	protected function redirect_to_remote_authorize_url() {
 		switch ( $this->auth_mode ) {
 			case 'cli':
-				$this->get_app_token_from_cli_token( $_REQUEST['token'] );
+				$this->get_app_token_from_cli_token( wp_verify_nonce( Utils::get_super_global_value( $_REQUEST, 'token' ) ) );
 				return;
 			default:
 				wp_redirect( $this->get_remote_authorize_url() );
@@ -700,7 +702,7 @@ abstract class Base_App {
 			case 'popup':
 				$redirect_uri = add_query_arg( [
 					'mode' => 'popup',
-					'callback_id' => esc_attr( $_REQUEST['callback_id'] ),
+					'callback_id' => esc_attr( wp_verify_nonce( Utils::get_super_global_value( $_REQUEST, 'callback_id' ) ) ),
 				], $redirect_uri );
 				break;
 		}

@@ -3,6 +3,7 @@ namespace Elementor;
 
 use Elementor\Core\Files\File_Types\Svg;
 use Elementor\Core\Page_Assets\Data_Managers\Font_Icon_Svg\Manager as Font_Icon_Svg_Data_Manager;
+use Elementor\Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -520,7 +521,7 @@ class Icons_Manager {
 	 * @return string
 	 */
 	public function get_upgrade_redirect_url() {
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'tools-page-from-editor' ) ) {
+		if ( ! wp_verify_nonce( Utils::get_super_global_value( $_GET, '_wpnonce' ), 'tools-page-from-editor' ) ) {
 			return '';
 		}
 
