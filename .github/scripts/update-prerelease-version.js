@@ -15,9 +15,12 @@ if (!['dev', 'beta', 'cloud'].includes(preId)) {
 const bumpVersion = (relativeVersion, lastVersionTagName, bumpsFromCurrentVersion = 1) => {
 	const lastVersion = packageJson[lastVersionTagName] || '';
 	let expectedVersion = inputVersion || relativeVersion;
-	(new Array(bumpsFromCurrentVersion).fill(1)).forEach(() => {
-		expectedVersion = semverInc(expectedVersion, 'minor');
-	});
+	
+	if ( ! inputVersion ) {
+		(new Array(bumpsFromCurrentVersion).fill(1)).forEach(() => {
+			expectedVersion = semverInc(expectedVersion, 'minor');
+		});
+	}
 
 	let currentLastVersionNumber = 0;
 
