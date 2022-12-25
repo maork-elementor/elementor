@@ -32,7 +32,7 @@ runs:
               PREV_PACKAGE_VERSION=$(node -p "require('./package.json').last_${{ inputs.CHANNEL }}_version")
             fi
 
-            NEW_PACKAGE_VERSION=$(node ./.github/scripts/update-prerelease-version.js ${{ inputs.CHANNEL }} ${INPUT_VERSION}) 
+            NEW_PACKAGE_VERSION=$(node ./.github/scripts/update-prerelease-version.js ${{ inputs.CHANNEL }} ${INPUT_VERSION})
             PACKAGE_VERSION=$(node -p "require('./package.json').last_${{ inputs.CHANNEL }}_version")
     
             echo "PACKAGE_VERSION=${NEW_PACKAGE_VERSION}" >> $GITHUB_ENV
