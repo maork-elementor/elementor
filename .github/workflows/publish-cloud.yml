@@ -65,6 +65,7 @@ jobs:
         uses: ./.github/workflows/bump-version
         with:
           CHANNEL: "cloud"
+          INPUT_VERSION: ${{ env.RELEASE_BRANCH }}
       - name: Push version
         uses : ./.github/workflows/push-new-version
         with:
