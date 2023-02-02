@@ -20,6 +20,8 @@ runs:
   using: "composite"
   steps:
     - shell: bash
+      env:
+        PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
       run: |
             if [ "${{ inputs.PACKAGE_VERSION }}" == "" ] || [ "${{ inputs.PACKAGE_VERSION }}" == "undefined" ];
               then
@@ -33,6 +35,3 @@ runs:
             fi
 
             bash ${{ inputs.BUILD_SCRIPT_PATH }}
-            
-      env:
-        PACKAGE_VERSION: ${{ inputs.PACKAGE_VERSION }}
