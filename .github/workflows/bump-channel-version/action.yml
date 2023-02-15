@@ -23,8 +23,8 @@ runs:
   steps:
     - shell: bash
       run: |
-            # git config user.name ${{ inputs.MAINTAIN_USERNAME }}
-            # git config user.email ${{ inputs.MAINTAIN_EMAIL }}
+            git config user.name ${{ inputs.MAINTAIN_USERNAME }}
+            git config user.email ${{ inputs.MAINTAIN_EMAIL }}
 
             # This command retrieves the latest tag that matches the specified channel and package version, 
             # and extracts the version number from the tag name using awk.
