@@ -11,12 +11,6 @@ inputs:
   CLEAN_PACKAGE_VERSION:
     required: true
     description: 'The current package version.'
-  MAINTAIN_USERNAME:
-    required: true
-    description: 'username of the maintainer.'
-  MAINTAIN_EMAIL:
-    required: true
-    description: 'email of the maintainer.'
 
 runs:
   using: "composite"
