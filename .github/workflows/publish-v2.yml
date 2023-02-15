@@ -12,7 +12,7 @@ jobs:
         with:
           token: ${{ secrets.MAINTAIN_TOKEN }}
       - name: Install Node.js 18.x
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
       - name: Parse ref branch name
@@ -32,7 +32,7 @@ jobs:
           fileName: temp-changelog.txt
           out-file-path: /tmp/
       - name: Upload zip file to GitHub actions artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}-${{ env.CLEAN_PACKAGE_NAME }}.zip
           path: /tmp/${{ github.event.repository.name }}-${{ env.CLEAN_PACKAGE_NAME }}.zip
