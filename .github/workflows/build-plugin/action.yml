@@ -23,6 +23,7 @@ runs:
                 exit 1
             fi
 
+            # TODO - Remove this when publish-cloud is removed.
             if [ "${{ inputs.UPDATE_VERSIONS_SCRIPT_PATH }}" != "" ];
               then
                 echo "Running update version script"
