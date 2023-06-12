@@ -29,6 +29,13 @@ const packages = Object.keys( dependencies )
 	   }
 	} );
 
+packages.push({
+	packageName: '@elementor/ai-panel',
+	type: 'extension',
+	name: 'ai-panel',
+	path: path.resolve( __dirname, '../assets/dev/js/editor/ai-panel/index.js' )
+})
+
 const common = {
 	name: 'packages',
 	entry: Object.fromEntries(
@@ -41,11 +48,34 @@ const common = {
 			extensions: packages.filter( ( entry ) => 'extension' === entry.type ).map( ( entry ) => entry.name ),
 			i18n: {
 				domain: 'elementor',
-
 			},
 		} ),
 		new ExternalizeWordPressAssetsWebpackPlugin( { globalKey: '__UNSTABLE__elementorPackages' } ),
 	],
+	module: {
+		rules: [
+			{
+				test: /\.js$/,
+				exclude: /node_modules/,
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+							presets: [ '@wordpress/default' ],
+							plugins: [
+								[ '@wordpress/babel-plugin-import-jsx-pragma' ],
+								[ '@babel/plugin-transform-react-jsx', {
+									'pragmaFrag': 'React.Fragment',
+								} ],
+								[ '@babel/plugin-transform-runtime' ],
+								[ '@babel/plugin-transform-modules-commonjs' ],
+							],
+						},
+					},
+				],
+			},
+		]
+	},
 	output: {
 		path: path.resolve( __dirname, '../assets/js/packages/' ),
 	},
