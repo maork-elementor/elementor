@@ -30,6 +30,39 @@ export default class Module extends elementorModules.editor.utils.Module {
 
 					view.setSettingsModel( value );
 					view.applySavedValue();
+
+					console.log( view );
+
+					if ( view.$el.length > 0 ) {
+						const textarea = view.$el.find('textarea');
+						const dynamicTagIcon = view.$el.find( '.elementor-control-dynamic-switcher' );
+					  
+						if (textarea.length > 0) {
+						  const textareaValue = textarea.val();
+					  
+						  if (textareaValue.includes('#####')) {
+							const valuesArray = textareaValue.split('#####');
+							const textareaWrapper = textarea.parent();
+
+							textarea.hide();
+							dynamicTagIcon.hide();
+							textareaWrapper.css('flex-direction', 'column');
+					  
+							valuesArray.forEach((duplicatedValue) => {
+								const duplicatedTextarea = jQuery('<textarea>').val(duplicatedValue).css('margin-bottom', '15px').attr('readonly', 'readonly');
+								duplicatedTextarea.hover(
+									() => {
+										view.setSettingsModel( duplicatedValue );
+									},
+									() => {
+									  view.setSettingsModel( value );
+									}
+								);
+								textareaWrapper.append(duplicatedTextarea);
+							});
+						  }
+						}
+					}
 				},
 				isLabelBlock: view.options.model.get( 'label_block' ),
 				additionalOptions: {

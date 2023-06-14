@@ -118,6 +118,7 @@ class Widget_Heading extends Widget_Base {
 				],
 				'placeholder' => esc_html__( 'Enter your title', 'elementor' ),
 				'default' => esc_html__( 'Add Your Heading Text Here', 'elementor' ),
+				'frontend_available' => true,
 			]
 		);
 
