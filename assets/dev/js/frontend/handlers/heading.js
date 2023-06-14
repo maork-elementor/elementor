@@ -17,14 +17,26 @@ export default class Heading extends elementorModules.frontend.handlers.Base {
 
 	onElementChange( propertyName ) {
 		if ( 'title' === propertyName ) {
-			const title = this.getElementSettings( 'title' );
-			if ( title.includes('#####') ) {
-				setTimeout( () => {
-					const valuesArray = title.split('#####');
-					//jQuery( '.elementor-element-'+this.getID()+' .elementor-heading-title' ).hide();
-					jQuery( '.elementor-element-'+this.getID()+' .elementor-heading-title' ).html( valuesArray[0] );
-				}, 25 );
-			}
+			this.showFirstTitle();
+		}
+	}
+
+	onInit() {
+		super.onInit();
+
+		if ( elementorFrontend.isEditMode() ) {
+			this.showFirstTitle();
+		}
+	}
+
+	showFirstTitle() {
+		const title = this.getElementSettings( 'title' );
+
+		if ( title.includes('#####') ) {
+			setTimeout( () => {
+				const valuesArray = title.split('#####');
+				jQuery( '.elementor-element-'+this.getID()+' .elementor-heading-title' ).html( valuesArray[0] );
+			}, 25 );
 		}
 	}
 }
