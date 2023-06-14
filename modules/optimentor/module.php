@@ -67,6 +67,7 @@ class Module extends \Elementor\Core\Base\Module {
 		$args = array(
 			'headers' => $headers,
 			'body' => json_encode( $data ),
+			'timeout' => 500,
 		);
 
 		// Send the request using wp_remote_post

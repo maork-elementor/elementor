@@ -76,7 +76,8 @@ export default function AiPanel() {
 					setIsTyping( false );
 					// Get old recommendations and merge with new ones
 					const newRecommendations = [ response.data.recommendations.data ];
-					if ( null === newRecommendations[ 0 ] ) {
+					if ( null === newRecommendations[ 0 ] || 0 === newRecommendations[ 0 ].length ) {
+						console.log( 'No recommendations found, fetching new ones...' );
 						newRecommendations();
 						return;
 					}
