@@ -199,7 +199,7 @@ const FormText = (
 		setEdit( '' );
 	};
 
-	// Const [value, setValue] = useState([50, 50]);
+	const [value, setValue] = useState([50, 50]);
 
   	const handleChange = ( event, newValue ) => {
 		setValue( newValue );
