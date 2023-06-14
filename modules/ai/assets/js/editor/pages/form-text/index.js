@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Box, Button, Grid, Stack } from '@elementor/ui';
+import { Box, Button, Grid, Stack, TextField, IconButton, Typography } from '@elementor/ui';
 import { AIIcon, MessageIcon, ShrinkIcon, ExpandIcon } from '@elementor/icons';
 import Loader from '../../components/loader';
 import PromptSearch from '../../components/prompt-search';
@@ -12,6 +12,18 @@ import PromptErrorMessage from '../../components/prompt-error-message';
 import useTextPrompt from '../../hooks/use-text-prompt';
 import { textAutocomplete, textareaAutocomplete, vocalTones, translateLanguages } from '../../actions-data';
 import PromptCredits from '../../components/prompt-credits';
+
+import EditIcon from '@mui/icons-material/Edit';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormLabel from '@mui/material/FormLabel';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Checkbox from '@mui/material/Checkbox';
+
+import Radio from '@mui/material/Radio';
+import { Slider } from '@mui/material';
 
 const promptActions = [
 	{
@@ -58,7 +70,53 @@ const FormText = (
 
 	const { data, isLoading, error, reset, send, sendUsageData } = useTextPrompt( { result: initialValue, credits } );
 
+	const [ checked1, setChecked1 ] = useState( true );
+	const [ checked2, setChecked2 ] = useState( false );
+	const [ checked3, setChecked3 ] = useState( false );
+	const [ checked4, setChecked4 ] = useState( false );
+
+	const handleCheckbox1Change = (event) => {
+		setChecked1(event.target.checked);
+		updateCheckedCount();
+	};
+
+	const handleCheckbox2Change = (event) => {
+		setChecked2(event.target.checked);
+		updateCheckedCount();
+	};
+
+	const handleCheckbox3Change = (event) => {
+		setChecked3(event.target.checked);
+		updateCheckedCount();
+	};
+
+	const handleCheckbox4Change = (event) => {
+		setChecked4(event.target.checked);
+		updateCheckedCount();
+	};
+
+	const updateCheckedCount = () => {
+		setTimeout( () => {
+			const checkedCount = document.querySelectorAll('[data-testid="CheckBoxIcon"]').length;
+
+			const elements = document.getElementsByClassName( checkedCount >= 2 ? 'start-testing' : 'use-text' );
+			console.log(elements);
+
+			for (let i = 0; i < elements.length; i++) {
+				elements[i].style.display = "block";
+			}
+
+			const elements2 = document.getElementsByClassName( checkedCount >= 2 ? 'use-text' : 'start-testing' );
+
+			for (let i = 0; i < elements2.length; i++) {
+				elements2[i].style.display = "none";
+			}
+		}, 200 );
+	};
+	
 	const [ prompt, setPrompt ] = useState( '' );
+	const [ test, setTest ] = useState( '' );
+	const [ edit, setEdit ] = useState( '' );
 
 	const searchField = useRef( null );
 
@@ -69,6 +127,8 @@ const FormText = (
 	const autocompleteItems = 'textarea' === type ? textareaAutocomplete : textAutocomplete;
 
 	const showSuggestions = ! prompt;
+	const showTestingDiv = ! ! test;
+	const showEditDiv = ! ! edit;
 
 	const handleSubmit = ( event ) => {
 		event.preventDefault();
@@ -91,11 +151,37 @@ const FormText = (
 
 	const applyPrompt = () => {
 		sendUsageData();
+	
+		const firstTextInput = document.querySelector('.options input[type="text"]');
+		const value = firstTextInput.value;
 
-		setControlValue( resultField.current.value );
+		//setControlValue( resultField.current.value );
+		setControlValue( value );
 
 		onClose();
 	};
+
+	const startTesting = () => {
+		setTest( 'text' );
+	};
+
+	const handleEdit = () => {
+		setEdit( 'edit' );
+	};
+
+	const goBack = () => {
+		setEdit( '' );
+	};
+
+	const [value, setValue] = React.useState([70, 30]);
+
+  	const handleChange = (event, newValue) => {
+		setValue(newValue);
+	};
+
+	const valuetext = (value) => {
+		return `${value}%`;
+	}
 
 	if ( isLoading ) {
 		return <Loader />;
@@ -104,6 +190,27 @@ const FormText = (
 	return (
 		<>
 			{ error && <PromptErrorMessage error={ error } onRetry={ lastRun.current } sx={ { mb: 6 } } /> }
+
+
+			{ showTestingDiv && (
+				<Box display="flex" alignItems="center">
+					<Typography variant="subtitle1" color="text.secondary">
+						{ __( 'Split Ratio', 'elementor' ) + ':' }
+					</Typography>
+					<Box width={`${50 + value}%`} height="8px" bgcolor="primary.main"></Box>
+					<Slider
+						aria-label="Weight"
+						defaultValue={50}
+						getAriaValueText={valuetext}
+						valueLabelDisplay="on"
+						step={10}
+						marks
+						min={10}
+						max={100}
+					/>
+					<Box width={`${50 - value}%`} height="8px" bgcolor="secondary.main"></Box>
+				</Box>
+			) }
 
 			{ ! data.result && (
 				<Box component="form" onSubmit={ handleSubmit }>
@@ -137,7 +244,129 @@ const FormText = (
 				</Box>
 			) }
 
-			{ data.result && (
+			{ data.result && ! showTestingDiv && ! showEditDiv && (
+				<Box sx={ { mt: 3 } }>
+					<p style={{ marginBottom: '30px', lineHeight: '20px'}}>Choose up to two headline options:<br></br>Select one to use immediately or choose two to start an A/B test</p>
+
+					<form className='options'>
+					<FormControl sx={{ m: 3 }} component="fieldset" variant="standard" style={{ width: '100%', margin: '0px' }}>
+					<FormGroup>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked1}
+							onChange={handleCheckbox1Change}
+							/>
+							<TextField
+							defaultValue={ data.result }
+							fullWidth
+							label="Option 1"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<div onClick={handleEdit}>
+										<IconButton size="small">
+											<EditIcon fontSize="small" />
+										</IconButton>
+									</div>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked2}
+							onChange={handleCheckbox2Change}
+							/>
+							<TextField
+							fullWidth
+							label="Option 2"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<IconButton size="small">
+									<EditIcon fontSize="small" />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked3}
+							onChange={handleCheckbox3Change}
+							/>
+							<TextField
+							fullWidth
+							label="Option 3"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<IconButton size="small">
+									<EditIcon fontSize="small" />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked4}
+							onChange={handleCheckbox4Change}
+							/>
+							<TextField
+							fullWidth
+							label="Option 4"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<IconButton size="small">
+									<EditIcon fontSize="small" />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					</FormGroup>
+				</FormControl>
+				<Stack direction="row" alignItems="center" sx={ { my: 2 } }>
+						<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
+							<div className='start-testing' style={{display: 'none'}}>
+								<Button size="small" variant="contained" color="primary" onClick={ startTesting }>
+									{ __( 'Start testing', 'elementor' ) }
+								</Button>
+							</div>
+							<div className='use-text'>
+								<Button size="small" variant="contained" color="primary" onClick={ applyPrompt }>
+									{ __( 'Use text', 'elementor' ) }
+								</Button>
+							</div>
+						</Stack>
+					</Stack>
+				</form>
+				</Box>
+			) }
+
+			{ data.result && showEditDiv && (
 				<Box sx={ { mt: 3 } }>
 					<Textarea
 						fullWidth
@@ -172,8 +401,10 @@ const FormText = (
 
 					<Stack direction="row" alignItems="center" sx={ { my: 8 } }>
 						<PromptCredits usagePercentage={ usagePercentage } />
-
 						<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
+							<Button size="small" color="secondary" variant="text" onClick={ goBack } style={{ position: 'relative', right: '50%' }}>
+								{ __( '< Go Back', 'elementor' ) }
+							</Button>
 							<Button size="small" color="secondary" variant="text" onClick={ reset }>
 								{ __( 'New prompt', 'elementor' ) }
 							</Button>
