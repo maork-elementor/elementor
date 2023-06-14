@@ -76,6 +76,10 @@ export default function AiPanel() {
 					setIsTyping( false );
 					// Get old recommendations and merge with new ones
 					const newRecommendations = [ response.data.recommendations.data ];
+					if ( null === newRecommendations[ 0 ] ) {
+						newRecommendations();
+						return;
+					}
 					// Marge old recommendations with new ones
 					const margedRecommendations = [
 						...recommendations,
