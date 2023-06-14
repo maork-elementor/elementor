@@ -84,9 +84,9 @@ class Module extends \Elementor\Core\Base\Module {
 	}
 
 	public function optimentor_generate_recommendations() {
-		$areas = $_POST['areas'];
+		$metrics = $_POST['metrics'];
 		$widgets = $_POST['widgets'];
-		wp_send_json_success( array( 'areas' => $areas, 'widgets' => $widgets ) );
+		wp_send_json_success( array( 'metrics' => $metrics, 'widgets' => $widgets ) );
 	}
 
 }

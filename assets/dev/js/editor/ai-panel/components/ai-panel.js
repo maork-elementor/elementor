@@ -30,21 +30,31 @@ const MenuProps = {
 	},
 };
 
-const areasNames = [ 'SEO', 'Performance', 'UX' ];
+const metricsNames = [ 'SEO', 'Performance', 'UX' ];
 const widgetsNames = [ 'Heading', 'Image', 'Text Editor' ];
 
 export default function AiPanel() {
-	const [ areas, setAreas ] = React.useState( [ 'SEO', 'UX' ] );
+	const [ metrics, setMetrics ] = React.useState( [ 'SEO', 'UX' ] );
 	const [ widgets, setWidgets ] = React.useState( [ 'Heading', 'Text Editor' ] );
 	const [ recommendations, setRecommendations ] = React.useState( [] );
 	const [ loading, setLoading ] = React.useState( false );
 	const [ isTyping, setIsTyping ] = React.useState( false );
 
-	const handleChange = ( event ) => {
+	const handleMetricsChange = ( event ) => {
 		const {
 			target: { value },
 		} = event;
-		setAreas(
+		setMetrics(
+			// On autofill we get a stringified value.
+			'string' === typeof value ? value.split( ',' ) : value,
+		);
+	};
+
+	const handleWidgetsChange = ( event ) => {
+		const {
+			target: { value },
+		} = event;
+		setWidgets(
 			// On autofill we get a stringified value.
 			'string' === typeof value ? value.split( ',' ) : value,
 		);
@@ -56,12 +66,12 @@ export default function AiPanel() {
 			type: 'POST',
 			data: {
 				action: 'optimentor_generate_recommendations',
-				areas: [ 'SEO' ],
-				widgets: [ 'Heading' ],
+				metrics,
+				widgets,
 			},
 			success( response ) {
 				console.log( response );
-				setLoading( false );
+				// SetLoading( false );
 			},
 			error( error ) {
 				console.log( error );
@@ -73,6 +83,7 @@ export default function AiPanel() {
 		// Wait 5 seconds
 		setTimeout( () => {
 			setIsTyping( true );
+			setLoading( false );
 		}, 5000 );
 	};
 
@@ -93,8 +104,8 @@ export default function AiPanel() {
 									fontWeight: 'bold',
 								} }
 							>
-								Hello, Im Optimentor AI Assistant
-								<br />I can help you to create a better website!
+								Hello, I'm Optimentor, your AI assistant for website
+								optimization. I'm here to make optimizing your website a breeze!
 							</Typography>
 						) }
 
@@ -106,7 +117,8 @@ export default function AiPanel() {
 									fontWeight: 'bold',
 								} }
 							>
-								Please wait, I'm generating recommendations JUST FOR YOU!
+								Just a moment, I'm generating personalized recommendations for
+								you...
 							</Typography>
 						) }
 						<img
@@ -123,18 +135,18 @@ export default function AiPanel() {
 
 								<FormControl sx={ { m: 1, width: '90%', marginTop: '30px' } }>
 									<InputLabel id="demo-multiple-chip-label">
-										Select Focus Areas:
+										Choose Metrics:
 									</InputLabel>
 									<Select
 										labelId="demo-multiple-chip-label"
 										id="demo-multiple-chip"
 										multiple
-										value={ areas }
-										onChange={ handleChange }
+										value={ metrics }
+										onChange={ handleMetricsChange }
 										input={
 											<OutlinedInput
 												id="select-multiple-chip"
-												label="Select Focus Areas:"
+												label="Choose Metrics:"
 											/>
 										}
 										renderValue={ ( selected ) => (
@@ -146,7 +158,7 @@ export default function AiPanel() {
 										) }
 										MenuProps={ MenuProps }
 									>
-										{ areasNames.map( ( name ) => (
+										{ metricsNames.map( ( name ) => (
 											<MenuItem key={ name } value={ name }>
 												{ name }
 											</MenuItem>
@@ -156,18 +168,18 @@ export default function AiPanel() {
 
 								<FormControl sx={ { m: 1, width: '90%', marginTop: '20px' } }>
 									<InputLabel id="demo-multiple-chip-label">
-										Select Widgets:
+										Choose Widgets:
 									</InputLabel>
 									<Select
 										labelId="demo-multiple-chip-label"
 										id="demo-multiple-chip"
 										multiple
 										value={ widgets }
-										onChange={ handleChange }
+										onChange={ handleWidgetsChange }
 										input={
 											<OutlinedInput
 												id="select-multiple-chip"
-												label="Select Widgets:"
+												label="Choose Widgets:"
 											/>
 										}
 										renderValue={ ( selected ) => (
@@ -193,14 +205,13 @@ export default function AiPanel() {
 									onClick={ generateRecommendations }
 									disabled={ loading }
 								>
-									Generate Recommendations
+									Get Started
 								</Button>
 							</>
 						) }
 					</Box>
 
 					<Box my={ 4 } textAlign={ 'center' }>
-
 						{ isTyping && (
 							<span>
 								<img
@@ -210,15 +221,20 @@ export default function AiPanel() {
 										marginLeft: '11px',
 									} }
 									alt="Optimentor AI Assistant"
-									src={ 'https://res.cloudinary.com/practicaldev/image/fetch/s--aLdmG8eR--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/rf4nb3r7qsn2u9fjrf47.gif' }
+									src={
+										'https://res.cloudinary.com/practicaldev/image/fetch/s--aLdmG8eR--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/rf4nb3r7qsn2u9fjrf47.gif'
+									}
 								/>
-								<Typography variant="caption" gutterBottom
+								<Typography
+									variant="caption"
+									gutterBottom
 									style={ {
 										textAlign: 'left',
 										float: 'left',
 										marginTop: '4px',
 										marginLeft: '10px',
-									} }>
+									} }
+								>
 									<strong>Optimentor</strong> is Typing...
 								</Typography>
 							</span>
