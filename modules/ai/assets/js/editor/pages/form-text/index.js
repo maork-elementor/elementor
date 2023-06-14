@@ -179,7 +179,7 @@ const FormText = (
 
 		const joinedString = inputValues.join('#####');
 
-		setJoinedString(joinedString);
+		setJoinedString( joinedString );
 		setTest( 'text' );
 	};
 
