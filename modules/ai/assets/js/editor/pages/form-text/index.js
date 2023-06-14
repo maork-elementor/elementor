@@ -217,15 +217,8 @@ const FormText = (
 	};
 
 	const selectStyles = {
-		color: 'white',
-		border: '1px solid white',
+		color: 'text.secondary',
 		marginBottom: '20px',
-		'&:before': {
-		  borderColor: 'white',
-		},
-		'&:after': {
-		  borderColor: 'white',
-		},
 	};
 
 	if ( isLoading ) {
@@ -271,16 +264,20 @@ const FormText = (
 								{ 'Goal Trigger:' }
 							</Typography>
 							<Box width="100%">
+								<Typography variant="body" color="text.secondary" style={ { marginBottom: '15px' } }>
+									{ 'Choose a Goal Trigger' }
+								</Typography>
 								<FormControl fullWidth>
-									<InputLabel style={ { color: 'white' } }>Choose a Goal Trigger</InputLabel>
 									<Select
 										sx={ selectStyles }
 									>
 										<MenuItem value={ 1 }>Arrived to the next step</MenuItem>
 									</Select>
 								</FormControl>
+								<Typography variant="body" color="text.secondary" style={ { marginBottom: '15px' } }>
+									{ 'Choose a page' }
+								</Typography>
 								<FormControl fullWidth>
-									<InputLabel style={ { color: 'white' } }>Choose a page</InputLabel>
 									<Select
 										sx={ selectStyles }
 									>
