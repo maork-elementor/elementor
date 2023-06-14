@@ -14,6 +14,12 @@ class Module extends \Elementor\Core\Base\Module {
 		return 'optimentor';
 	}
 
+	public function __construct() {
+		parent::__construct();
+		add_action( 'wp_ajax_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
+		add_action( 'wp_ajax_nopriv_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
+	}
+
 	public function submit_prompt( $request ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$data = Utils::_unstable_get_super_global_value( $_POST, 'data' );
@@ -77,14 +83,9 @@ class Module extends \Elementor\Core\Base\Module {
 		}
 	}
 
-	public function optimentor_generate_recommendations() {
-		return 'asdasd';
+	public function optimentor_generate_recommendations( $request ) {
+		$test = 12;
+		wp_send_json_success( $test );
 	}
 
-
-	public function __construct() {
-		parent::__construct();
-		add_action( 'wp_ajax_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
-		add_action( 'wp_ajax_nopriv_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
-	}
 }

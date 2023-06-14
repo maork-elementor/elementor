@@ -51,17 +51,13 @@ export default function AiPanel() {
 	};
 
 	const generateRecommendations = () => {
-		// Admin-ajax.php
-		$.ajax( {
+		jQuery.ajax( {
 			url: '/wp-admin/admin-ajax.php',
 			type: 'POST',
 			data: {
+				action: 'optimentor_generate_recommendations',
 				areas: [ 'SEO' ],
 				widgets: [ 'Heading' ],
-				action: 'optimentor_generate_recommendations',
-			},
-			beforeSend( xhr ) {
-				xhr.setRequestHeader( 'Content-Type', 'application/json' );
 			},
 			success( response ) {
 				console.log( response );
