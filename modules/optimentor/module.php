@@ -51,7 +51,7 @@ class Module extends \Elementor\Core\Base\Module {
 			'model' => 'gpt-3.5-turbo',
 			'messages' => array(
 				array(
-					'role' => 'system',
+					'role' => 'user',
 					'content' => 'You are a helpful assistant.',
 				),
 				array(
@@ -82,11 +82,10 @@ class Module extends \Elementor\Core\Base\Module {
 
 		$result = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		var_dump( $result );
-		die();
+		// var_dump( $result['choices'][0]['message']['content'] );
+
 		if ( isset( $result['choices'][0]['message']['content'] ) ) {
-			$answer = $result['choices'][0]['message']['content'];
-			return json_decode( $answer, true );
+			return $result['choices'][0]['message']['content'];
 		}
 
 		return false;
@@ -98,7 +97,7 @@ class Module extends \Elementor\Core\Base\Module {
 		global $wpdb;
 
 		$metrics = $_POST['metrics'];
-		$widgets = $_POST['widgets'];
+		$widget = $_POST['widget'];
 		$post_id = $_POST['post_id'];
 
 		$site_title = get_bloginfo( 'name' );
@@ -121,63 +120,71 @@ class Module extends \Elementor\Core\Base\Module {
 				$recommendations[ $widget ] = null;
 			}
 
-			$widget_settings = [];
+		$widget_settings = [];
 
 				//make this recursive later on
-			foreach ( $elementor_data[0]['elements'] as $item ) {
-				foreach ( $item as $key => $value ) {
-					if ( 'elements' == $key ) {
-						foreach ( $value as $element ) {
-							if ( $element['widgetType'] == 'heading' ) {
-								foreach ( $element['settings'] as $key => $value ) {
-									//if  $value is not array
-									if ( ! is_array( $value ) ) {
-										if ( 'title' === $key || 'size' === $key ) {
-											continue;
-										}
-										$widget_settings[ $key ] = $value;
+		foreach ( $elementor_data[0]['elements'] as $item ) {
+			foreach ( $item as $key => $value ) {
+				if ( 'elements' == $key ) {
+					foreach ( $value as $element ) {
+
+						if ( $element['widgetType']  == $widget ) {
+							foreach ( $element['settings'] as $key => $value ) {
+								//if  $value is not array
+								if ( ! is_array( $value ) ) {
+									if ( 'title' === $key || 'size' === $key ) {
+										continue;
 									}
+									$widget_settings[ $key ] = $value;
 								}
-								break;
 							}
+							break;
 						}
 					}
 				}
 			}
-
-			$promot .= 'I have a website named ' . $site_title . ' and it is about ' . $site_description . '.\n\n';
-			$promot .= 'I will give you a list of css properties that i currently have on my title, please suggest me a better UI UX for my title. \n\n';
-			$promot .= '4 different styles for my title please. feel free to change all the properties but please keep in mind my website';
-			$promot .= ' name and description and make the style to match my website niche and client base. \n\n';
-			$promot .= 'My main goal is to improve my conversion rate and user engagement. \n\n';
-			$promot .= 'if you change the font family please use browser supported font \n\n';
-			$promot .= 'The current css properties for my title are: \n\n	';
-
-			foreach ( $widget_settings as $key => $value ) {
-				$promot .= $key . ': ' . $value . '\n';
-			}
-
-			$promot .= 'give me response in json format, please so i will be able to parse it and add the styles to my title. \n';
-
-			$seo_recommendations_widget = $this->interact_with_gpt_api( $promot );
-			$recommendations[ $widget ] = $seo_recommendations_widget;
-						break;
-					case 'banana':
-						break;
-					case 'pear':
-						break;
-					default:
-						break;
-				}
-			}
 		}
-		//loop through each metric
 
+		$promot .= 'You are a helpful UI UX designer. I have a website named ' . $site_title . ' and it is about ' . $site_description . '.\n\n';
+		$promot .= 'I will give you a list of css properties that i currently have on my title, please suggest me a better UI UX for my title. \n\n';
+		$promot .= '4 different styles for my title please. feel free to change all the properties but please keep in mind my website';
+		$promot .= ' name and description and make the style to match my website niche and client base. \n\n';
+		$promot .= 'My main goal is to improve my conversion rate and user engagement. \n\n';
+		$promot .= 'if you change the font family please use browser supported font \n\n';
+		$promot .= 'provide me 4 different styles in JSON format \n\n';
+		$promot .= 'in this format: \n\n';
+		$promot .= '{xxx:xxx,xxx:xxx},{xxx:xxx,xxx:xxx} \n\n';
+		$promot .= 'The current css properties for my title are: \n\n	';
+
+		foreach ( $widget_settings as $key => $value ) {
+			$promot .= $key . ': ' . $value . '\n';
+		}
+
+		$promot .= 'give me response in json format, please so i will be able to parse it and add the styles to my title. \n';
+
+		$widget_recomandations = $this->interact_with_gpt_api( $promot );
+
+		// Use regex to match JSON strings
+		preg_match_all( '/\{(?:[^{}]|(?R))*\}/x', $widget_recomandations, $matches );
+
+		$json_arrays = [];
+
+		// Loop over matches and json_decode each one
+		foreach ( $matches[0] as $match ) {
+			$json_arrays[] = json_decode( $match, true );
+		}
+
+		$recommendations[ $widget ] = $json_arrays;
+
+		//loop through each metric
 
 		wp_send_json_success( array(
 			'metrics' => $metrics,
 			'widgets' => $widgets,
-			'recommendations' => $recommendations,
+			'recommendations' => array (
+				'widget' => $widget,
+				'data' => $recommendations,
+			),
 		));
 	}
 

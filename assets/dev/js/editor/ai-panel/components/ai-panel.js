@@ -13,6 +13,12 @@ import {
 	Select,
 	MenuItem,
 	Typography,
+	List,
+	ListItem,
+	ListItemText,
+	Divider,
+	ListItemAvatar,
+	Avatar,
 	Container,
 	LinearProgress,
 	OutlinedInput,
@@ -38,6 +44,7 @@ export default function AiPanel() {
 	const [ loading, setLoading ] = React.useState( false );
 	const [ isTyping, setIsTyping ] = React.useState( false );
 	const [ dataFetched, setDataFetched ] = React.useState( false );
+	const [ currentFetchWidget, setCurrentFetchWidget ] = React.useState( '' );
 
 	const handleWidgetsChange = ( event ) => {
 		const {
@@ -50,31 +57,47 @@ export default function AiPanel() {
 	};
 
 	const generateRecommendations = () => {
-		setLoading( true );
-		setTimeout( () => {
-			setIsTyping( true );
-		}, 2000 );
-		jQuery.ajax( {
-			url: '/wp-admin/admin-ajax.php',
-			type: 'POST',
-			data: {
-				action: 'optimentor_generate_recommendations',
-				widgets,
-				post_id: window.elementor.config.document.id,
-			},
-			success( response ) {
-				console.log( response );
-				setIsTyping( false );
-				setRecommendations( response.data.recommendations );
-				setLoading( false );
-				setDataFetched( true );
-			},
-			error( error ) {
-				console.log( error );
-				setLoading( false );
-				setIsTyping( false );
-			},
-		} );
+		// Loop on widgets
+		// set current widget
+
+		for ( const widget of widgets ) {
+			setCurrentFetchWidget( widget );
+			setLoading( true );
+			setTimeout( () => {
+				setIsTyping( true );
+			}, 2000 );
+			jQuery.ajax( {
+				url: '/wp-admin/admin-ajax.php',
+				type: 'POST',
+				data: {
+					action: 'optimentor_generate_recommendations',
+					widget: widget.toLowerCase().replace( ' ', '_' ),
+					post_id: window.elementor.config.document.id,
+				},
+				success( response ) {
+					console.log( response );
+
+					setIsTyping( false );
+					// Get old recommendations and merge with new ones
+					const newRecommendations = [ response.data.recommendations.data ];
+					// Marge old recommendations with new ones
+					const margedRecommendations = [
+						...recommendations,
+						...newRecommendations,
+					];
+					setRecommendations( margedRecommendations );
+
+					setLoading( false );
+					setDataFetched( true );
+					setCurrentFetchWidget( '' );
+				},
+				error( error ) {
+					console.log( error );
+					setLoading( false );
+					setIsTyping( false );
+				},
+			} );
+		}
 	};
 
 	return (
@@ -204,7 +227,40 @@ export default function AiPanel() {
 
 						{ ! loading && recommendations?.length > 0 && (
 							<>
-								{ /* Loop recommendations		 */ }
+								{ /* Loop index and value */ }
+								{ recommendations.map( ( recommendation, index ) => {
+									// Modify the data as you wish
+									const widgetName = Object.keys( recommendation )[ 0 ];
+									const styles = recommendation[ widgetName ];
+
+									return (
+										<>
+
+											<Typography variant="h6" gutterBottom
+												style={ {
+													fontWeight: '700',
+													fontSize: '18px',
+													textTransform: 'capitalize',
+													marginBottom: '9px',
+												} }>
+												{ widgetName }
+											</Typography>
+
+											<Divider style={ {
+												marginBottom: '9px',
+											} } />
+											{ Object.keys( styles[ 0 ] ).map( ( key ) => {
+												// Debugger;
+												return (
+													<>
+														{ key } : { JSON.stringify( styles[ 0 ][ key ] ) }
+														<br />
+													</>
+												);
+											} ) }
+										</>
+									);
+								} ) }
 							</>
 						) }
 					</Box>
