@@ -449,7 +449,6 @@ const FormText = (
 								</div>
 							</Stack>
 						</Stack>
-				</Stack>
 					</form>
 				</Box>
 			) }
