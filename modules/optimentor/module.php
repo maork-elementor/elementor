@@ -2,6 +2,7 @@
 namespace Elementor\Modules\Optimentor;
 
 use Elementor\Plugin;
+use ElementorPro\Core\Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -13,9 +14,25 @@ class Module extends \Elementor\Core\Base\Module {
 		return 'optimentor';
 	}
 
-	public function submit_prompt() {
-		$input_text = $_POST['input_text'];
-		$this->interact_with_gpt_api( $input_text );
+	public function submit_prompt( $request ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$data = Utils::_unstable_get_super_global_value( $_POST, 'data' );
+
+		$json_data = $request->get_param( 'json_data' );
+		// Process the JSON data as needed
+		// Example: Convert JSON data to an array
+		$data_array = json_decode( $json_data, true );
+
+		// Perform additional actions or operations with the data
+
+		// Return a response
+		$response = array(
+			'success' => true,
+			'message' => 'JSON data received and processed successfully',
+			'data' => $data_array,
+		);
+
+		$this->interact_with_gpt_api( $data );
 	}
 
 	public function interact_with_gpt_api( $input_text ) {
@@ -39,7 +56,7 @@ class Module extends \Elementor\Core\Base\Module {
 		$response = wp_remote_post($api_url, array(
 			'headers' => $headers,
 			'body' => wp_json_encode( $data ),
-		));
+		) );
 
 		// Check for errors
 		if ( is_wp_error( $response ) ) {
@@ -61,20 +78,17 @@ class Module extends \Elementor\Core\Base\Module {
 	}
 
 	public function register_submit_prompt_endpoint() {
-		add_action( 'rest_api_init', function () {
-			register_rest_route( 'optimentor/v1', '/submit_prompt', array(
+			register_rest_route( 'optimentor/v1', '/submit_prompt/', array(
 				'methods' => 'POST',
-				'callback' => array( $this, 'submit_prompt' ),
+				'callback' => 
 				'permission_callback' => function () {
 					return current_user_can( 'edit_others_posts' );
 				},
 			) );
-		} );
 	}
 
 	public function __construct() {
 		parent::__construct();
-
-		$this->register_submit_prompt_endpoint();
+		add_action( 'rest_api_init', 'register_prompt_submit_endpoint' );
 	}
 }
