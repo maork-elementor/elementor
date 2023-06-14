@@ -16,6 +16,9 @@ import {
 	Container,
 	LinearProgress,
 	OutlinedInput,
+	Accordion,
+	AccordionDetails,
+	AccordionSummary,
 	Box,
 } from '@elementor/ui';
 
@@ -34,11 +37,17 @@ const metricsNames = [ 'SEO', 'Performance', 'UX' ];
 const widgetsNames = [ 'Heading', 'Image', 'Text Editor' ];
 
 export default function AiPanel() {
-	const [ metrics, setMetrics ] = React.useState( [ 'SEO', 'UX' ] );
-	const [ widgets, setWidgets ] = React.useState( [ 'Heading', 'Text Editor' ] );
+	const [ metrics, setMetrics ] = React.useState( [ 'SEO', 'UX', 'Performance' ] );
+	const [ widgets, setWidgets ] = React.useState( [ 'Heading' ] );
 	const [ recommendations, setRecommendations ] = React.useState( [] );
 	const [ loading, setLoading ] = React.useState( false );
 	const [ isTyping, setIsTyping ] = React.useState( false );
+	const [ dataFetched, setDataFetched ] = React.useState( false );
+	const [ expanded, setExpanded ] = React.useState( false );
+
+	const handleAccordionChange = ( panel ) => ( event, isExpanded ) => {
+	  setExpanded( isExpanded ? panel : false );
+	};
 
 	const handleMetricsChange = ( event ) => {
 		const {
@@ -61,6 +70,10 @@ export default function AiPanel() {
 	};
 
 	const generateRecommendations = () => {
+		setLoading( true );
+		setTimeout( () => {
+			setIsTyping( true );
+		}, 2000 );
 		jQuery.ajax( {
 			url: '/wp-admin/admin-ajax.php',
 			type: 'POST',
@@ -68,23 +81,21 @@ export default function AiPanel() {
 				action: 'optimentor_generate_recommendations',
 				metrics,
 				widgets,
+				post_id: window.elementor.config.document.id,
 			},
 			success( response ) {
 				console.log( response );
-				// SetLoading( false );
+				setIsTyping( false );
+				setRecommendations( response.data.recommendations );
+				setLoading( false );
+				setDataFetched( true );
 			},
 			error( error ) {
 				console.log( error );
 				setLoading( false );
+				setIsTyping( false );
 			},
 		} );
-
-		setLoading( true );
-		// Wait 5 seconds
-		setTimeout( () => {
-			setIsTyping( true );
-			setLoading( false );
-		}, 5000 );
 	};
 
 	return (
@@ -95,121 +106,124 @@ export default function AiPanel() {
 			{ loading && <LinearProgress color="primary" /> }
 			<PanelBody>
 				<Container maxWidth="sm">
-					<Box my={ 4 } textAlign={ 'center' }>
-						{ ! loading && (
-							<Typography
-								variant="subtitle1"
-								gutterBottom
-								style={ {
-									fontWeight: 'bold',
-								} }
-							>
-								Hello, I'm Optimentor, your AI assistant for website
-								optimization. I'm here to make optimizing your website a breeze!
-							</Typography>
-						) }
-
-						{ loading && (
-							<Typography
-								variant="subtitle1"
-								gutterBottom
-								style={ {
-									fontWeight: 'bold',
-								} }
-							>
-								Just a moment, I'm generating personalized recommendations for
-								you...
-							</Typography>
-						) }
-						<img
-							alt="Optimentor AI Assistant"
-							src={
-								'https://miro.medium.com/v2/resize:fit:1400/1*fZsdZisozTZbM6AaPQKI4Q.gif'
-							}
-						/>
-						{ ! loading && (
-							<>
-								<Typography variant="subtitle1" gutterBottom>
-									What do you want to improve?
-								</Typography>
-
-								<FormControl sx={ { m: 1, width: '90%', marginTop: '30px' } }>
-									<InputLabel id="demo-multiple-chip-label">
-										Choose Metrics:
-									</InputLabel>
-									<Select
-										labelId="demo-multiple-chip-label"
-										id="demo-multiple-chip"
-										multiple
-										value={ metrics }
-										onChange={ handleMetricsChange }
-										input={
-											<OutlinedInput
-												id="select-multiple-chip"
-												label="Choose Metrics:"
-											/>
-										}
-										renderValue={ ( selected ) => (
-											<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
-												{ selected.map( ( value ) => (
-													<Chip key={ value } label={ value } />
-												) ) }
-											</Box>
-										) }
-										MenuProps={ MenuProps }
-									>
-										{ metricsNames.map( ( name ) => (
-											<MenuItem key={ name } value={ name }>
-												{ name }
-											</MenuItem>
-										) ) }
-									</Select>
-								</FormControl>
-
-								<FormControl sx={ { m: 1, width: '90%', marginTop: '20px' } }>
-									<InputLabel id="demo-multiple-chip-label">
-										Choose Widgets:
-									</InputLabel>
-									<Select
-										labelId="demo-multiple-chip-label"
-										id="demo-multiple-chip"
-										multiple
-										value={ widgets }
-										onChange={ handleWidgetsChange }
-										input={
-											<OutlinedInput
-												id="select-multiple-chip"
-												label="Choose Widgets:"
-											/>
-										}
-										renderValue={ ( selected ) => (
-											<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
-												{ selected.map( ( value ) => (
-													<Chip key={ value } label={ value } />
-												) ) }
-											</Box>
-										) }
-										MenuProps={ MenuProps }
-									>
-										{ widgetsNames.map( ( name ) => (
-											<MenuItem key={ name } value={ name }>
-												{ name }
-											</MenuItem>
-										) ) }
-									</Select>
-								</FormControl>
-
-								<Button
-									variant="contained"
-									style={ { marginTop: '30px' } }
-									onClick={ generateRecommendations }
-									disabled={ loading }
+					{ ! dataFetched && (
+						<Box my={ 4 } textAlign={ 'center' }>
+							{ ! loading && 0 === recommendations.length && (
+								<Typography
+									variant="subtitle1"
+									gutterBottom
+									style={ {
+										fontWeight: 'bold',
+									} }
 								>
-									Get Started
-								</Button>
-							</>
-						) }
-					</Box>
+									Hello, I'm Optimentor, I'm here to make optimizing your website
+									a breeze!
+								</Typography>
+							) }
+
+							{ loading && (
+								<Typography
+									variant="subtitle1"
+									gutterBottom
+									style={ {
+										fontWeight: 'bold',
+									} }
+								>
+									Just a moment, I'm generating personalized recommendations for
+									you...
+								</Typography>
+							) }
+
+							{ ! loading && 0 === recommendations.length && (
+								<>
+									<img
+										alt="Optimentor AI Assistant"
+										width={ '60%' }
+										src={ 'https://s12.gifyu.com/images/SQbgy.gif' }
+									/>
+
+									<Typography variant="subtitle1" gutterBottom>
+										What do you want to improve?
+									</Typography>
+
+									<FormControl sx={ { m: 1, width: '90%', marginTop: '30px' } }>
+										<InputLabel id="demo-multiple-chip-label">
+											Choose Metrics:
+										</InputLabel>
+										<Select
+											labelId="demo-multiple-chip-label"
+											id="demo-multiple-chip"
+											multiple
+											value={ metrics }
+											onChange={ handleMetricsChange }
+											input={
+												<OutlinedInput
+													id="select-multiple-chip"
+													label="Choose Metrics:"
+												/>
+											}
+											renderValue={ ( selected ) => (
+												<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
+													{ selected.map( ( value ) => (
+														<Chip key={ value } label={ value } />
+													) ) }
+												</Box>
+											) }
+											MenuProps={ MenuProps }
+										>
+											{ metricsNames.map( ( name ) => (
+												<MenuItem key={ name } value={ name }>
+													{ name }
+												</MenuItem>
+											) ) }
+										</Select>
+									</FormControl>
+
+									<FormControl sx={ { m: 1, width: '90%', marginTop: '20px' } }>
+										<InputLabel id="demo-multiple-chip-label">
+											Choose Widgets:
+										</InputLabel>
+										<Select
+											labelId="demo-multiple-chip-label"
+											id="demo-multiple-chip"
+											multiple
+											value={ widgets }
+											onChange={ handleWidgetsChange }
+											input={
+												<OutlinedInput
+													id="select-multiple-chip"
+													label="Choose Widgets:"
+												/>
+											}
+											renderValue={ ( selected ) => (
+												<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
+													{ selected.map( ( value ) => (
+														<Chip key={ value } label={ value } />
+													) ) }
+												</Box>
+											) }
+											MenuProps={ MenuProps }
+										>
+											{ widgetsNames.map( ( name ) => (
+												<MenuItem key={ name } value={ name }>
+													{ name }
+												</MenuItem>
+											) ) }
+										</Select>
+									</FormControl>
+
+									<Button
+										variant="contained"
+										style={ { marginTop: '30px' } }
+										onClick={ generateRecommendations }
+										disabled={ loading }
+									>
+										Get Started
+									</Button>
+								</>
+							) }
+						</Box>
+					) }
 
 					<Box my={ 4 } textAlign={ 'center' }>
 						{ isTyping && (
@@ -238,6 +252,69 @@ export default function AiPanel() {
 									<strong>Optimentor</strong> is Typing...
 								</Typography>
 							</span>
+						) }
+
+						{ ! loading && recommendations?.seo && (
+
+							<div>
+								<br /><br />
+								<Typography variant="h5" gutterBottom>
+									Here are your recommendations:
+								</Typography>
+
+								<br />
+
+								<Accordion expanded={ 'panel1' === expanded } onChange={ handleAccordionChange( 'panel1' ) }>
+									<AccordionSummary
+										aria-controls="panel1bh-content"
+										id="panel1bh-header"
+									>
+										<Typography sx={ { width: '33%', flexShrink: 0 } }>
+											SEO
+										</Typography>
+										<Typography sx={ { color: 'text.secondary' } }>I am an accordion</Typography>
+									</AccordionSummary>
+									<AccordionDetails>
+										<Typography>
+										</Typography>
+									</AccordionDetails>
+								</Accordion>
+								<Accordion expanded={ 'panel2' === expanded } onChange={ handleAccordionChange( 'panel2' ) }>
+									<AccordionSummary
+										aria-controls="panel2bh-content"
+										id="panel2bh-header"
+									>
+										<Typography sx={ { width: '33%', flexShrink: 0 } }>Users</Typography>
+										<Typography sx={ { color: 'text.secondary' } }>
+											UX
+										</Typography>
+									</AccordionSummary>
+									<AccordionDetails>
+										<Typography>
+										</Typography>
+									</AccordionDetails>
+								</Accordion>
+								<Accordion expanded={ 'panel3' === expanded } onChange={ handleAccordionChange( 'panel3' ) }>
+									<AccordionSummary
+										aria-controls="panel3bh-content"
+										id="panel3bh-header"
+									>
+										<Typography sx={ { width: '33%', flexShrink: 0 } }>
+											Performance
+										</Typography>
+										<Typography sx={ { color: 'text.secondary' } }>
+
+										</Typography>
+									</AccordionSummary>
+									<AccordionDetails>
+										<Typography>
+											Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
+											amet egestas eros, vitae egestas augue. Duis vel est augue.
+										</Typography>
+									</AccordionDetails>
+								</Accordion>
+							</div>
+
 						) }
 					</Box>
 				</Container>
