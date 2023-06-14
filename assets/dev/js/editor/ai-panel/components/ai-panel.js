@@ -38,6 +38,7 @@ export default function AiPanel() {
 	const [ widgets, setWidgets ] = React.useState( [ 'Heading', 'Text Editor' ] );
 	const [ recommendations, setRecommendations ] = React.useState( [] );
 	const [ loading, setLoading ] = React.useState( false );
+	const [ isTyping, setIsTyping ] = React.useState( false );
 
 	const handleChange = ( event ) => {
 		const {
@@ -64,6 +65,12 @@ export default function AiPanel() {
 			body: JSON.stringify( data ),
 		};
 		const response = fetch( endpoint, options );
+
+		// Wait 5 seconds
+		setTimeout( () => {
+			setIsTyping( true );
+		}, 5000 );
+
 		response
 			.then( ( res ) => res.json() )
 			.then( ( res ) => {
@@ -82,100 +89,144 @@ export default function AiPanel() {
 			<PanelBody>
 				<Container maxWidth="sm">
 					<Box my={ 4 } textAlign={ 'center' }>
-						<Typography
-							variant="subtitle1"
-							gutterBottom
-							style={ {
-								fontWeight: 'bold',
-							} }
-						>
-							Hello, Im Optimentor AI Assistant
-							<br />I can help you to create a better website!
-						</Typography>
+						{ ! loading && (
+							<Typography
+								variant="subtitle1"
+								gutterBottom
+								style={ {
+									fontWeight: 'bold',
+								} }
+							>
+								Hello, Im Optimentor AI Assistant
+								<br />I can help you to create a better website!
+							</Typography>
+						) }
+
+						{ loading && (
+							<Typography
+								variant="subtitle1"
+								gutterBottom
+								style={ {
+									fontWeight: 'bold',
+								} }
+							>
+								Please wait, I'm generating recommendations JUST FOR YOU!
+							</Typography>
+						) }
 						<img
 							alt="Optimentor AI Assistant"
 							src={
 								'https://miro.medium.com/v2/resize:fit:1400/1*fZsdZisozTZbM6AaPQKI4Q.gif'
 							}
 						/>
-						<Typography variant="subtitle1" gutterBottom>
-							What do you want to improve?
-						</Typography>
+						{ ! loading && (
+							<>
+								<Typography variant="subtitle1" gutterBottom>
+									What do you want to improve?
+								</Typography>
 
-						<FormControl sx={ { m: 1, width: '90%', marginTop: '30px' } }>
-							<InputLabel id="demo-multiple-chip-label">
-								Select Focus Areas:
-							</InputLabel>
-							<Select
-								labelId="demo-multiple-chip-label"
-								id="demo-multiple-chip"
-								multiple
-								value={ areas }
-								onChange={ handleChange }
-								input={
-									<OutlinedInput
-										id="select-multiple-chip"
-										label="Select Focus Areas:"
-									/>
-								}
-								renderValue={ ( selected ) => (
-									<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
-										{ selected.map( ( value ) => (
-											<Chip key={ value } label={ value } />
+								<FormControl sx={ { m: 1, width: '90%', marginTop: '30px' } }>
+									<InputLabel id="demo-multiple-chip-label">
+										Select Focus Areas:
+									</InputLabel>
+									<Select
+										labelId="demo-multiple-chip-label"
+										id="demo-multiple-chip"
+										multiple
+										value={ areas }
+										onChange={ handleChange }
+										input={
+											<OutlinedInput
+												id="select-multiple-chip"
+												label="Select Focus Areas:"
+											/>
+										}
+										renderValue={ ( selected ) => (
+											<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
+												{ selected.map( ( value ) => (
+													<Chip key={ value } label={ value } />
+												) ) }
+											</Box>
+										) }
+										MenuProps={ MenuProps }
+									>
+										{ areasNames.map( ( name ) => (
+											<MenuItem key={ name } value={ name }>
+												{ name }
+											</MenuItem>
 										) ) }
-									</Box>
-								) }
-								MenuProps={ MenuProps }
-							>
-								{ areasNames.map( ( name ) => (
-									<MenuItem key={ name } value={ name }>
-										{ name }
-									</MenuItem>
-								) ) }
-							</Select>
-						</FormControl>
+									</Select>
+								</FormControl>
 
-						<FormControl sx={ { m: 1, width: '90%', marginTop: '20px' } }>
-							<InputLabel id="demo-multiple-chip-label">
-								Select Widgets:
-							</InputLabel>
-							<Select
-								labelId="demo-multiple-chip-label"
-								id="demo-multiple-chip"
-								multiple
-								value={ widgets }
-								onChange={ handleChange }
-								input={
-									<OutlinedInput
-										id="select-multiple-chip"
-										label="Select Widgets:"
-									/>
-								}
-								renderValue={ ( selected ) => (
-									<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
-										{ selected.map( ( value ) => (
-											<Chip key={ value } label={ value } />
+								<FormControl sx={ { m: 1, width: '90%', marginTop: '20px' } }>
+									<InputLabel id="demo-multiple-chip-label">
+										Select Widgets:
+									</InputLabel>
+									<Select
+										labelId="demo-multiple-chip-label"
+										id="demo-multiple-chip"
+										multiple
+										value={ widgets }
+										onChange={ handleChange }
+										input={
+											<OutlinedInput
+												id="select-multiple-chip"
+												label="Select Widgets:"
+											/>
+										}
+										renderValue={ ( selected ) => (
+											<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
+												{ selected.map( ( value ) => (
+													<Chip key={ value } label={ value } />
+												) ) }
+											</Box>
+										) }
+										MenuProps={ MenuProps }
+									>
+										{ widgetsNames.map( ( name ) => (
+											<MenuItem key={ name } value={ name }>
+												{ name }
+											</MenuItem>
 										) ) }
-									</Box>
-								) }
-								MenuProps={ MenuProps }
-							>
-								{ widgetsNames.map( ( name ) => (
-									<MenuItem key={ name } value={ name }>
-										{ name }
-									</MenuItem>
-								) ) }
-							</Select>
-						</FormControl>
+									</Select>
+								</FormControl>
 
-						<Button
-							variant="contained"
-							style={ { marginTop: '30px' } }
-							onClick={ generateRecommendations }
-							disabled={ loading }
-						>
-							Generate Recommendations
-						</Button>
+								<Button
+									variant="contained"
+									style={ { marginTop: '30px' } }
+									onClick={ generateRecommendations }
+									disabled={ loading }
+								>
+									Generate Recommendations
+								</Button>
+							</>
+						) }
+					</Box>
+
+					<Box my={ 4 } textAlign={ 'center' }>
+
+						{ isTyping && (
+							<span>
+								<img
+									style={ {
+										height: '25px',
+										float: 'left',
+										marginLeft: '11px',
+									} }
+									alt="Optimentor AI Assistant"
+									src={ 'https://res.cloudinary.com/practicaldev/image/fetch/s--aLdmG8eR--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/rf4nb3r7qsn2u9fjrf47.gif' }
+								/>
+								<Typography variant="caption" gutterBottom
+									style={ {
+										textAlign: 'left',
+										float: 'left',
+										marginTop: '4px',
+										marginLeft: '10px',
+									} }>
+									<strong>Optimentor</strong> is Typing...
+								</Typography>
+							</span>
+						) }
 					</Box>
 				</Container>
 			</PanelBody>
