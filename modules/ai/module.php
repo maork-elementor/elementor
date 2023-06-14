@@ -26,6 +26,7 @@ class Module extends BaseModule {
 		add_action( 'elementor/ajax/register_actions', function( $ajax ) {
 			$ajax->register_ajax_action( 'ai_get_user_information', [ $this, 'ajax_ai_get_user_information' ] );
 			$ajax->register_ajax_action( 'ai_get_completion_text', [ $this, 'ajax_ai_get_completion_text' ] );
+			$ajax->register_ajax_action( 'ai_get_four_array_titles_completion_text', [ $this, 'ajax_ai_get_four_array_titles_completion_text' ] );
 			$ajax->register_ajax_action( 'ai_get_edit_text', [ $this, 'ajax_ai_get_edit_text' ] );
 			$ajax->register_ajax_action( 'ai_get_custom_code', [ $this, 'ajax_ai_get_custom_code' ] );
 			$ajax->register_ajax_action( 'ai_get_custom_css', [ $this, 'ajax_ai_get_custom_css' ] );
@@ -153,6 +154,34 @@ class Module extends BaseModule {
 		}
 
 		$result = $app->get_completion_text( $data['prompt'] );
+		if ( is_wp_error( $result ) ) {
+			throw new \Exception( $result->get_error_message() );
+		}
+
+		return [
+			'text' => $result['text'],
+			'response_id' => $result['responseId'],
+			'usage' => $result['usage'],
+		];
+	}
+
+
+	public function ajax_ai_get_four_array_titles_completion_text( $data ) {
+		$this->verify_permissions( $data['editor_post_id'] );
+
+		$app = $this->get_ai_app();
+
+		if ( empty( $data['prompt'] ) ) {
+			throw new \Exception( 'Missing prompt' );
+		}
+
+		if ( ! $app->is_connected() ) {
+			throw new \Exception( 'not_connected' );
+		}
+
+		$prompt = 'generate 4 titles for "' . $data['prompt'] . '" and return it in JSON format';
+
+		$result = $app->get_completion_text( $prompt );
 		if ( is_wp_error( $result ) ) {
 			throw new \Exception( $result->get_error_message() );
 		}
