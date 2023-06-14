@@ -178,8 +178,13 @@ const FormText = (
 
 		const inputValues = [];
 
+		let count = 0;
+
+		const checkedCount = document.querySelectorAll( '[data-testid="CheckBoxIcon"]' ).length;
+
 		textInputs.forEach( ( input ) => {
-			if ( '' !== input.value ) {
+			count++;
+			if ( count <= checkedCount ) {
 				inputValues.push( input.value );
 			}
 		} );
