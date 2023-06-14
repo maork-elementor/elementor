@@ -16,9 +16,6 @@ import {
 	Container,
 	LinearProgress,
 	OutlinedInput,
-	Accordion,
-	AccordionDetails,
-	AccordionSummary,
 	Box,
 } from '@elementor/ui';
 
@@ -46,7 +43,7 @@ export default function AiPanel() {
 	const [ expanded, setExpanded ] = React.useState( false );
 
 	const handleAccordionChange = ( panel ) => ( event, isExpanded ) => {
-	  setExpanded( isExpanded ? panel : false );
+		setExpanded( isExpanded ? panel : false );
 	};
 
 	const handleMetricsChange = ( event ) => {
@@ -116,8 +113,8 @@ export default function AiPanel() {
 										fontWeight: 'bold',
 									} }
 								>
-									Hello, I'm Optimentor, I'm here to make optimizing your website
-									a breeze!
+									Hello, I'm Optimentor, I'm here to make optimizing your
+									website a breeze!
 								</Typography>
 							) }
 
@@ -163,7 +160,9 @@ export default function AiPanel() {
 												/>
 											}
 											renderValue={ ( selected ) => (
-												<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
+												<Box
+													sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }
+												>
 													{ selected.map( ( value ) => (
 														<Chip key={ value } label={ value } />
 													) ) }
@@ -196,7 +195,9 @@ export default function AiPanel() {
 												/>
 											}
 											renderValue={ ( selected ) => (
-												<Box sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }>
+												<Box
+													sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }
+												>
 													{ selected.map( ( value ) => (
 														<Chip key={ value } label={ value } />
 													) ) }
@@ -254,12 +255,10 @@ export default function AiPanel() {
 							</span>
 						) }
 
-						{ ! loading && recommendations?.seo && (
-
-							<div>
-
-							</div>
-
+						{ ! loading && recommendations?.length > 0 && (
+							<>
+								{ /* Loop recommendations		 */ }
+							</>
 						) }
 					</Box>
 				</Container>
