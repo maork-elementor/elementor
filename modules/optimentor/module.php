@@ -3,6 +3,7 @@ namespace Elementor\Modules\Optimentor;
 
 use Elementor\Plugin;
 use ElementorPro\Core\Utils;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -44,7 +45,7 @@ class Module extends \Elementor\Core\Base\Module {
 	public function interact_with_gpt_api( $prompt ) {
 		// API endpoint URL
 		$api_url = 'https://api.openai.com/v1/chat/completions';
-		$api_key = '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';
+		$api_key = '';
 
 		$data = array(
 			'model' => 'gpt-3.5-turbo',
@@ -79,6 +80,8 @@ class Module extends \Elementor\Core\Base\Module {
 
 		$result = json_decode( wp_remote_retrieve_body( $response ), true );
 
+		var_dump( $result );
+		die();
 		if ( isset( $result['choices'][0]['message']['content'] ) ) {
 			$answer = $result['choices'][0]['message']['content'];
 			return json_decode( $answer, true );
@@ -125,34 +128,41 @@ class Module extends \Elementor\Core\Base\Module {
 			}
 		}
 
-		$seo_recommendations = null;
-		//loop through each metric
-		foreach ( $metrics as $metric ) {
-			//switch case for each metric
-			switch ( $metric ) {
-				case 'SEO':
-					$promot .= 'I have a website named ' . $site_title . ' and it is about ' . $site_description . '. I want to improve my SEO. ';
-					$promot .= 'I want to rank higher on Google. ';
-					$promot .= 'This is my current page headline (h1) "' . $heading . '". ';
-					$promot .= 'Please suggest me a better headline so that I can rank higher on Google.';
-					$promot .= 'give me response in json format, please { new_title: "new title" , explanation: "explanation" }';
-					$seo_recommendations = $this->interact_with_gpt_api( $promot );
-					break;
-				case 'banana':
-					break;
-				case 'pear':
-					break;
-				default:
-					break;
+		$recommendations = [];
+		foreach ( $widgets as $key => $widget ) {
+
+			if ( ! $recommendations[ $widget ] ) {
+				$recommendations[ $widget ] = null;
+			}
+
+			foreach ( $metrics as $metric ) {
+				//switch case for each metric
+				switch ( $metric ) {
+					case 'SEO':
+						$promot .= 'I have a website named ' . $site_title . ' and it is about ' . $site_description . '. I want to improve my SEO. ';
+						$promot .= 'I want to rank higher on Google. ';
+						$promot .= 'This is my current page headline (h1) "' . $heading . '". ';
+						$promot .= 'Please suggest me a better headline so that I can rank higher on Google.';
+						$promot .= 'give me response in json format, please { new_title: "new title" , explanation: "explanation" }';
+						$seo_recommendations_widget = $this->interact_with_gpt_api( $promot );
+						$recommendations[ $widget ][ $metric ] = $seo_recommendations_widget;
+						break;
+					case 'banana':
+						break;
+					case 'pear':
+						break;
+					default:
+						break;
+				}
 			}
 		}
+		//loop through each metric
+
 
 		wp_send_json_success( array(
 			'metrics' => $metrics,
 			'widgets' => $widgets,
-			'recommendations' => array(
-				'seo' => $seo_recommendations,
-			),
+			'recommendations' => $recommendations,
 		));
 	}
 

@@ -257,62 +257,7 @@ export default function AiPanel() {
 						{ ! loading && recommendations?.seo && (
 
 							<div>
-								<br /><br />
-								<Typography variant="h5" gutterBottom>
-									Here are your recommendations:
-								</Typography>
 
-								<br />
-
-								<Accordion expanded={ 'panel1' === expanded } onChange={ handleAccordionChange( 'panel1' ) }>
-									<AccordionSummary
-										aria-controls="panel1bh-content"
-										id="panel1bh-header"
-									>
-										<Typography sx={ { width: '33%', flexShrink: 0 } }>
-											SEO
-										</Typography>
-										<Typography sx={ { color: 'text.secondary' } }>I am an accordion</Typography>
-									</AccordionSummary>
-									<AccordionDetails>
-										<Typography>
-										</Typography>
-									</AccordionDetails>
-								</Accordion>
-								<Accordion expanded={ 'panel2' === expanded } onChange={ handleAccordionChange( 'panel2' ) }>
-									<AccordionSummary
-										aria-controls="panel2bh-content"
-										id="panel2bh-header"
-									>
-										<Typography sx={ { width: '33%', flexShrink: 0 } }>Users</Typography>
-										<Typography sx={ { color: 'text.secondary' } }>
-											UX
-										</Typography>
-									</AccordionSummary>
-									<AccordionDetails>
-										<Typography>
-										</Typography>
-									</AccordionDetails>
-								</Accordion>
-								<Accordion expanded={ 'panel3' === expanded } onChange={ handleAccordionChange( 'panel3' ) }>
-									<AccordionSummary
-										aria-controls="panel3bh-content"
-										id="panel3bh-header"
-									>
-										<Typography sx={ { width: '33%', flexShrink: 0 } }>
-											Performance
-										</Typography>
-										<Typography sx={ { color: 'text.secondary' } }>
-
-										</Typography>
-									</AccordionSummary>
-									<AccordionDetails>
-										<Typography>
-											Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-											amet egestas eros, vitae egestas augue. Duis vel est augue.
-										</Typography>
-									</AccordionDetails>
-								</Accordion>
 							</div>
 
 						) }
