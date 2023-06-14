@@ -489,7 +489,7 @@ const FormText = (
 					<Stack direction="row" alignItems="center" sx={ { my: 8 } }>
 						<PromptCredits usagePercentage={ usagePercentage } />
 						<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
-							<Button size="small" color="secondary" variant="text" onClick={ goBack } style={ { position: 'relative', right: '50%' } }>
+							<Button size="small" color="secondary" variant="text" onClick={ goBack } style={ { position: 'relative', right: '70%' } }>
 								{ __( '< Go Back', 'elementor' ) }
 							</Button>
 							<Button size="small" variant="contained" color="primary" onClick={ applyPrompt }>
