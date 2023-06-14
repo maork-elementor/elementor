@@ -186,7 +186,7 @@ const FormText = (
 
 	const startTest = () => {
 		sendUsageData();
-	
+
 		setControlValue( joinedString );
 
 		onClose();
@@ -291,7 +291,7 @@ const FormText = (
 					<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
 						<Button size="small" variant="contained" color="primary" onClick={ startTest }>
 							{ __( 'Start test', 'elementor' ) }
-						</Button>						
+						</Button>
 					</Stack>
 				</Stack>
 			</>
@@ -344,7 +344,7 @@ const FormText = (
 							onChange={handleCheckbox1Change}
 							/>
 							<TextField
-							defaultValue={ data.result }
+							defaultValue={ titles[ 0 ] }
 							fullWidth
 							label="Option 1"
 							InputProps={{
@@ -370,7 +370,7 @@ const FormText = (
 							onChange={handleCheckbox2Change}
 							/>
 							<TextField
-							defaultValue={ data.result }
+							defaultValue={ titles[ 1 ] }
 							fullWidth
 							label="Option 2"
 							InputProps={{
@@ -394,6 +394,7 @@ const FormText = (
 							onChange={handleCheckbox3Change}
 							/>
 							<TextField
+							defaultValue={ titles[ 2 ] }
 							fullWidth
 							label="Option 3"
 							InputProps={{
@@ -417,6 +418,7 @@ const FormText = (
 							onChange={handleCheckbox4Change}
 							/>
 							<TextField
+							defaultValue={ titles[ 3 ] }
 							fullWidth
 							label="Option 4"
 							InputProps={{
