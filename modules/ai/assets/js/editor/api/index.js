@@ -12,6 +12,8 @@ export const getUserInformation = () => request( 'ai_get_user_information' );
 
 export const getCompletionText = ( prompt ) => request( 'ai_get_completion_text', { prompt } );
 
+export const getCompletionTitles = ( prompt ) => request( 'ai_get_four_array_titles_completion_text', { prompt } );
+
 export const getEditText = ( input, instruction ) => request( 'ai_get_edit_text', { input, instruction } );
 
 export const getCustomCode = ( prompt, language ) => request( 'ai_get_custom_code', { prompt, language } );
