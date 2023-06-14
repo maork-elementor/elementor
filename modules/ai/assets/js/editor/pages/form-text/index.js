@@ -24,6 +24,8 @@ import Checkbox from '@mui/material/Checkbox';
 
 import Radio from '@mui/material/Radio';
 import { Slider } from '@mui/material';
+import { InputLabel, MenuItem, Select } from '@mui/material';
+
 
 const promptActions = [
 	{
@@ -118,6 +120,7 @@ const FormText = (
 	const [ prompt, setPrompt ] = useState( '' );
 	const [ test, setTest ] = useState( '' );
 	const [ edit, setEdit ] = useState( '' );
+	const [ joinedString, setJoinedString ] = useState( '' );
 
 	const searchField = useRef( null );
 
@@ -163,7 +166,30 @@ const FormText = (
 	};
 
 	const startTesting = () => {
+		const targetDiv = document.querySelector('.options');
+
+		const textInputs = targetDiv.querySelectorAll('input[type="text"]');
+
+		const inputValues = [];
+
+		textInputs.forEach((input) => {
+			if ( '' !== input.value ) {
+				inputValues.push(input.value);
+			}
+		});
+
+		const joinedString = inputValues.join('#####');
+
+		setJoinedString( joinedString );
 		setTest( 'text' );
+	};
+
+	const startTest = () => {
+		sendUsageData();
+	
+		setControlValue( joinedString );
+
+		onClose();
 	};
 
 	const handleEdit = () => {
@@ -174,7 +200,7 @@ const FormText = (
 		setEdit( '' );
 	};
 
-	const [ value, setValue ] = React.useState( [ 70, 30 ] );
+	const [value, setValue] = useState([50, 50]);
 
   	const handleChange = ( event, newValue ) => {
 		setValue( newValue );
@@ -182,6 +208,17 @@ const FormText = (
 
 	const valuetext = ( value ) => {
 		return `${ value }%`;
+	};
+
+	const selectStyles = {
+		color: 'white',
+		marginBottom: '10px',
+		'&:before': {
+		  borderColor: 'white',
+		},
+		'&:after': {
+		  borderColor: 'white',
+		},
 	};
 
 	if ( isLoading ) {
@@ -193,23 +230,71 @@ const FormText = (
 			{ error && <PromptErrorMessage error={ error } onRetry={ lastRun.current } sx={ { mb: 6 } } /> }
 
 			{ showTestingDiv && (
-				<Box display="flex" alignItems="center">
-					<Typography variant="subtitle1" color="text.secondary">
-						{ __( 'Split Ratio', 'elementor' ) + ':' }
-					</Typography>
-					<Box width={ `${ 50 + value }%` } height="8px" bgcolor="primary.main"></Box>
-					<Slider
-						aria-label="Weight"
-						defaultValue={ 50 }
-						getAriaValueText={ valuetext }
-						valueLabelDisplay="on"
-						step={ 10 }
-						marks
-						min={ 10 }
-						max={ 100 }
-					/>
-					<Box width={ `${ 50 - value }%` } height="8px" bgcolor="secondary.main"></Box>
-				</Box>
+			<>
+				<Grid container direction="column" alignItems="left" spacing={3} sx={{ marginBottom: '80px' }}>
+					<Grid item style={{ textAlign: 'left' }}>
+						<Typography variant="h3" color="text.secondary" style={{ marginBottom: '30px' }}>
+						{'Split Ratio:'}
+						</Typography>
+					</Grid>
+					<Grid item container alignItems="center" spacing={1}>
+						<Grid item>
+							<Typography variant="body2" color="text.secondary">
+								A
+							</Typography>
+						</Grid>
+						<Grid item xs>
+							<Slider
+								aria-label="Weight"
+								value={value}
+								onChange={handleChange}
+								getAriaValueText={valuetext}
+								valueLabelDisplay="on"
+								step={10}
+								min={0}
+								max={100}
+							/>
+						</Grid>
+						<Grid item>
+							<Typography variant="body2" color="text.secondary">
+								B
+							</Typography>
+						</Grid>
+					</Grid>
+					<Grid item style={{ textAlign: 'left' }}>
+						<Typography variant="h4" color="text.secondary" style={{ marginBottom: '10px' }}>
+						{'Goal Trigger:'}
+						</Typography>
+						<Box width="100%">
+							<FormControl fullWidth>
+							    <InputLabel style={{ color: 'white' }}>Select a Goal Trigger</InputLabel>
+								<Select
+									sx={selectStyles}
+								>
+									<MenuItem value={1}>Arrived to the next step</MenuItem>
+								</Select>
+							</FormControl>
+							<FormControl fullWidth>
+								<InputLabel style={{ color: 'white' }}>Choose a page</InputLabel>
+								<Select
+									sx={selectStyles}
+								>
+									<MenuItem value={1}>Page 1</MenuItem>
+									<MenuItem value={2}>Page 2</MenuItem>
+									<MenuItem value={3}>Page 3</MenuItem>
+								</Select>
+							</FormControl>
+						</Box>
+					</Grid>
+				</Grid>
+				<Stack direction="row" alignItems="center" sx={ { my: 1 } }>
+					<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
+						<Button size="small" variant="contained" color="primary" onClick={ startTest }>
+							{ __( 'Start test', 'elementor' ) }
+						</Button>						
+					</Stack>
+				</Stack>
+			</>
 			) }
 
 			{ ! data.result && (
@@ -248,122 +333,119 @@ const FormText = (
 				<Box sx={ { mt: 3 } }>
 					<p style={ { marginBottom: '30px', lineHeight: '20px' } }>Choose up to two headline options:<br></br>Select one to use immediately or choose two to start an A/B test</p>
 
-					<form className="options">
-						<FormControl sx={ { m: 3 } } component="fieldset" variant="standard" style={ { width: '100%', margin: '0px' } }>
-							<FormGroup>
-								<FormControlLabel
-									control={
-										<div style={ { display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' } }>
-											<Checkbox
-												checked={ checked1 }
-												onChange={ handleCheckbox1Change }
-											/>
-											<TextField
-												defaultValue={ titles[ 0 ] }
-												fullWidth
-												label="Option 1"
-												InputProps={ {
-													endAdornment: (
-														<InputAdornment position="end" sx={ { marginRight: '-12px' } }>
-															<div onClick={ handleEdit }>
-																<IconButton size="small">
-																	<EditIcon fontSize="small" />
-																</IconButton>
-															</div>
-														</InputAdornment>
-													),
-												} }
-											/>
-										</div>
-									}
-								/>
-								<FormControlLabel
-									control={
-										<div style={ { display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' } }>
-											<Checkbox
-												checked={ checked2 }
-												onChange={ handleCheckbox2Change }
-											/>
-											<TextField
-												fullWidth
-												label="Option 2"
-												defaultValue={ titles[ 1 ] }
-												InputProps={ {
-													endAdornment: (
-														<InputAdornment position="end" sx={ { marginRight: '-12px' } }>
-															<IconButton size="small">
-																<EditIcon fontSize="small" />
-															</IconButton>
-														</InputAdornment>
-													),
-												} }
-											/>
-										</div>
-									}
-								/>
-								<FormControlLabel
-									control={
-										<div style={ { display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' } }>
-											<Checkbox
-												checked={ checked3 }
-												onChange={ handleCheckbox3Change }
-											/>
-											<TextField
-												defaultValue={ titles[ 2 ] }
-												fullWidth
-												label="Option 3"
-												InputProps={ {
-													endAdornment: (
-														<InputAdornment position="end" sx={ { marginRight: '-12px' } }>
-															<IconButton size="small">
-																<EditIcon fontSize="small" />
-															</IconButton>
-														</InputAdornment>
-													),
-												} }
-											/>
-										</div>
-									}
-								/>
-								<FormControlLabel
-									control={
-										<div style={ { display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' } }>
-											<Checkbox
-												checked={ checked4 }
-												onChange={ handleCheckbox4Change }
-											/>
-											<TextField
-												fullWidth
-												label="Option 4"
-												defaultValue={ titles[ 3 ] }
-												InputProps={ {
-													endAdornment: (
-														<InputAdornment position="end" sx={ { marginRight: '-12px' } }>
-															<IconButton size="small">
-																<EditIcon fontSize="small" />
-															</IconButton>
-														</InputAdornment>
-													),
-												} }
-											/>
-										</div>
-									}
-								/>
-							</FormGroup>
-						</FormControl>
-						<Stack direction="row" alignItems="center" sx={ { my: 2 } }>
-							<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
-								<div className="start-testing" style={ { display: 'none' } }>
-									<Button size="small" variant="contained" color="primary" onClick={ startTesting }>
-										{ __( 'Start testing', 'elementor' ) }
-									</Button>
-								</div>
-								<div className="use-text">
-									<Button size="small" variant="contained" color="primary" onClick={ applyPrompt }>
-										{ __( 'Use text', 'elementor' ) }
-									</Button>
-								</div>
-							</Stack>
+					<form className='options'>
+					<FormControl sx={{ m: 3 }} component="fieldset" variant="standard" style={{ width: '100%', margin: '0px' }}>
+					<FormGroup>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked1}
+							onChange={handleCheckbox1Change}
+							/>
+							<TextField
+							defaultValue={ data.result }
+							fullWidth
+							label="Option 1"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<div onClick={handleEdit}>
+										<IconButton size="small">
+											<EditIcon fontSize="small" />
+										</IconButton>
+									</div>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked2}
+							onChange={handleCheckbox2Change}
+							/>
+							<TextField
+							defaultValue={ data.result }
+							fullWidth
+							label="Option 2"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<IconButton size="small">
+									<EditIcon fontSize="small" />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked3}
+							onChange={handleCheckbox3Change}
+							/>
+							<TextField
+							fullWidth
+							label="Option 3"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<IconButton size="small">
+									<EditIcon fontSize="small" />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					<FormControlLabel
+						control={
+						<div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', width: '100%' }}>
+							<Checkbox
+							checked={checked4}
+							onChange={handleCheckbox4Change}
+							/>
+							<TextField
+							fullWidth
+							label="Option 4"
+							InputProps={{
+								endAdornment: (
+								<InputAdornment position="end" sx={{ marginRight: '-12px' }}>
+									<IconButton size="small">
+									<EditIcon fontSize="small" />
+									</IconButton>
+								</InputAdornment>
+								),
+							}}
+							/>
+						</div>
+						}
+					/>
+					</FormGroup>
+				</FormControl>
+				<Stack direction="row" alignItems="center" sx={ { my: 2 } }>
+						<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
+							<div className='start-testing' style={{display: 'none'}}>
+								<Button size="small" variant="contained" color="primary" onClick={ startTesting }>
+									{ __( 'Start testing', 'elementor' ) }
+								</Button>
+							</div>
+							<div className='use-text'>
+								<Button size="small" variant="contained" color="primary" onClick={ applyPrompt }>
+									{ __( 'Use text', 'elementor' ) }
+								</Button>
+							</div>
 						</Stack>
 					</form>
 				</Box>
