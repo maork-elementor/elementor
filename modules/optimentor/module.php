@@ -67,15 +67,13 @@ class Module extends \Elementor\Core\Base\Module {
 		$args = array(
 			'headers' => $headers,
 			'body' => json_encode( $data ),
-			'timeout' => 500,
 		);
 
 		// Send the request using wp_remote_post
 		$response = wp_remote_post( $api_url, $args );
 
 		if ( is_wp_error( $response ) ) {
-			$error_message = $response->get_error_message();
-			return 'Error occurred while connecting to ChatGPT API. Error Message: ' . $error_message;
+			return 'Error occurred while connecting to ChatGPT API.';
 		}
 
 		$result = json_decode( wp_remote_retrieve_body( $response ), true );
