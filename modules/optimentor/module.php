@@ -55,7 +55,7 @@ class Module extends \Elementor\Core\Base\Module {
 					'content' => 'You are a helpful assistant.',
 				),
 				array(
-					'role' => 'user',
+					'role' => 'assistant',
 					'content' => $prompt,
 				),
 			),
@@ -69,13 +69,15 @@ class Module extends \Elementor\Core\Base\Module {
 		$args = array(
 			'headers' => $headers,
 			'body' => json_encode( $data ),
+			'timeout' => 500,
 		);
 
 		// Send the request using wp_remote_post
 		$response = wp_remote_post( $api_url, $args );
 
 		if ( is_wp_error( $response ) ) {
-			return 'Error occurred while connecting to ChatGPT API.';
+			$error_message = $response->get_error_message();
+			return 'Error occurred while connecting to ChatGPT API. Error Message: ' . $error_message;
 		}
 
 		$result = json_decode( wp_remote_retrieve_body( $response ), true );
@@ -112,22 +114,6 @@ class Module extends \Elementor\Core\Base\Module {
 
 		$elementor_data = json_decode( $elementor_data, true );
 
-		$heading = '';
-
-		//make this recursive later on
-		foreach ( $elementor_data[0]['elements'] as $item ) {
-			foreach ( $item as $key => $value ) {
-				if ( 'elements' == $key ) {
-					foreach ( $value as $element ) {
-						if ( $element['widgetType'] == 'heading' ) {
-							$heading = $element['settings']['title'];
-							break;
-						}
-					}
-				}
-			}
-		}
-
 		$recommendations = [];
 		foreach ( $widgets as $key => $widget ) {
 
@@ -135,17 +121,46 @@ class Module extends \Elementor\Core\Base\Module {
 				$recommendations[ $widget ] = null;
 			}
 
-			foreach ( $metrics as $metric ) {
-				//switch case for each metric
-				switch ( $metric ) {
-					case 'SEO':
-						$promot .= 'I have a website named ' . $site_title . ' and it is about ' . $site_description . '. I want to improve my SEO. ';
-						$promot .= 'I want to rank higher on Google. ';
-						$promot .= 'This is my current page headline (h1) "' . $heading . '". ';
-						$promot .= 'Please suggest me a better headline so that I can rank higher on Google.';
-						$promot .= 'give me response in json format, please { new_title: "new title" , explanation: "explanation" }';
-						$seo_recommendations_widget = $this->interact_with_gpt_api( $promot );
-						$recommendations[ $widget ][ $metric ] = $seo_recommendations_widget;
+			$widget_settings = [];
+
+				//make this recursive later on
+			foreach ( $elementor_data[0]['elements'] as $item ) {
+				foreach ( $item as $key => $value ) {
+					if ( 'elements' == $key ) {
+						foreach ( $value as $element ) {
+							if ( $element['widgetType'] == 'heading' ) {
+								foreach ( $element['settings'] as $key => $value ) {
+									//if  $value is not array
+									if ( ! is_array( $value ) ) {
+										if ( 'title' === $key || 'size' === $key ) {
+											continue;
+										}
+										$widget_settings[ $key ] = $value;
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			$promot .= 'I have a website named ' . $site_title . ' and it is about ' . $site_description . '.\n\n';
+			$promot .= 'I will give you a list of css properties that i currently have on my title, please suggest me a better UI UX for my title. \n\n';
+			$promot .= '4 different styles for my title please. feel free to change all the properties but please keep in mind my website';
+			$promot .= ' name and description and make the style to match my website niche and client base. \n\n';
+			$promot .= 'My main goal is to improve my conversion rate and user engagement. \n\n';
+			$promot .= 'if you change the font family please use browser supported font \n\n';
+			$promot .= 'The current css properties for my title are: \n\n	';
+
+			foreach ( $widget_settings as $key => $value ) {
+				$promot .= $key . ': ' . $value . '\n';
+			}
+
+			$promot .= 'give me response in json format, please so i will be able to parse it and add the styles to my title. \n';
+
+			$seo_recommendations_widget = $this->interact_with_gpt_api( $promot );
+			$recommendations[ $widget ] = $seo_recommendations_widget;
 						break;
 					case 'banana':
 						break;

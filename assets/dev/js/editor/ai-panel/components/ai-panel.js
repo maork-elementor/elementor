@@ -30,31 +30,14 @@ const MenuProps = {
 	},
 };
 
-const metricsNames = [ 'SEO', 'Performance', 'UX' ];
 const widgetsNames = [ 'Heading', 'Image', 'Text Editor' ];
 
 export default function AiPanel() {
-	const [ metrics, setMetrics ] = React.useState( [ 'SEO', 'UX', 'Performance' ] );
 	const [ widgets, setWidgets ] = React.useState( [ 'Heading' ] );
 	const [ recommendations, setRecommendations ] = React.useState( [] );
 	const [ loading, setLoading ] = React.useState( false );
 	const [ isTyping, setIsTyping ] = React.useState( false );
 	const [ dataFetched, setDataFetched ] = React.useState( false );
-	const [ expanded, setExpanded ] = React.useState( false );
-
-	const handleAccordionChange = ( panel ) => ( event, isExpanded ) => {
-		setExpanded( isExpanded ? panel : false );
-	};
-
-	const handleMetricsChange = ( event ) => {
-		const {
-			target: { value },
-		} = event;
-		setMetrics(
-			// On autofill we get a stringified value.
-			'string' === typeof value ? value.split( ',' ) : value,
-		);
-	};
 
 	const handleWidgetsChange = ( event ) => {
 		const {
@@ -76,7 +59,6 @@ export default function AiPanel() {
 			type: 'POST',
 			data: {
 				action: 'optimentor_generate_recommendations',
-				metrics,
 				widgets,
 				post_id: window.elementor.config.document.id,
 			},
@@ -98,7 +80,7 @@ export default function AiPanel() {
 	return (
 		<Panel>
 			<PanelHeader>
-				<PanelHeaderTitle>Optimentor AI Assistant</PanelHeaderTitle>
+				<PanelHeaderTitle>Optimentor AI UX Assistant</PanelHeaderTitle>
 			</PanelHeader>
 			{ loading && <LinearProgress color="primary" /> }
 			<PanelBody>
@@ -140,43 +122,8 @@ export default function AiPanel() {
 									/>
 
 									<Typography variant="subtitle1" gutterBottom>
-										What do you want to improve?
+										Which widgets are you want to improve conversion rates?
 									</Typography>
-
-									<FormControl sx={ { m: 1, width: '90%', marginTop: '30px' } }>
-										<InputLabel id="demo-multiple-chip-label">
-											Choose Metrics:
-										</InputLabel>
-										<Select
-											labelId="demo-multiple-chip-label"
-											id="demo-multiple-chip"
-											multiple
-											value={ metrics }
-											onChange={ handleMetricsChange }
-											input={
-												<OutlinedInput
-													id="select-multiple-chip"
-													label="Choose Metrics:"
-												/>
-											}
-											renderValue={ ( selected ) => (
-												<Box
-													sx={ { display: 'flex', flexWrap: 'wrap', gap: 0.5 } }
-												>
-													{ selected.map( ( value ) => (
-														<Chip key={ value } label={ value } />
-													) ) }
-												</Box>
-											) }
-											MenuProps={ MenuProps }
-										>
-											{ metricsNames.map( ( name ) => (
-												<MenuItem key={ name } value={ name }>
-													{ name }
-												</MenuItem>
-											) ) }
-										</Select>
-									</FormControl>
 
 									<FormControl sx={ { m: 1, width: '90%', marginTop: '20px' } }>
 										<InputLabel id="demo-multiple-chip-label">
