@@ -19,6 +19,8 @@ class Module extends \Elementor\Core\Base\Module {
 		parent::__construct();
 		add_action( 'wp_ajax_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
 		add_action( 'wp_ajax_nopriv_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
+		add_action( 'elementor/frontend/before_render', array( $this, 'randomize_test' ) );
+
 	}
 
 	public function submit_prompt( $request ) {
@@ -186,6 +188,25 @@ class Module extends \Elementor\Core\Base\Module {
 				'data' => $recommendations,
 			),
 		));
+	}
+
+	public function randomize_test() {
+
+		$page_id = get_the_ID();
+		// Generate a random number between 0 and 1
+		if ( ! isset( $_SESSION['is_ab_test_set'] ) ) {
+			$random_number = wp_rand( 0, 1 );
+			$_SESSION['is_ab_test_set'] = $random_number;
+		}
+
+		// Determine the option based on the random number
+		if ( 0 === $_SESSION['is_ab_test_set'] ) {
+			// Option 1
+			echo 'session value is 0' . $_SESSION['is_ab_test_set'];
+		} else {
+			// Option 2
+			echo 'session value is 1' . $_SESSION['is_ab_test_set'];
+		}
 	}
 
 }

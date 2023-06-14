@@ -71,51 +71,52 @@ const FormText = (
 	const initialValue = getControlValue() === additionalOptions?.defaultValue ? '' : getControlValue();
 
 	const { data, isLoading, error, reset, send, sendUsageData } = useTextPrompt( { result: initialValue, credits } );
-
+	const cleanData = data.result.replace( /\\n/g, '' );
+	const titles = data.result ? JSON.parse( cleanData ).titles : '';
 	const [ checked1, setChecked1 ] = useState( true );
 	const [ checked2, setChecked2 ] = useState( false );
 	const [ checked3, setChecked3 ] = useState( false );
 	const [ checked4, setChecked4 ] = useState( false );
 
-	const handleCheckbox1Change = (event) => {
-		setChecked1(event.target.checked);
+	const handleCheckbox1Change = ( event ) => {
+		setChecked1( event.target.checked );
 		updateCheckedCount();
 	};
 
-	const handleCheckbox2Change = (event) => {
-		setChecked2(event.target.checked);
+	const handleCheckbox2Change = ( event ) => {
+		setChecked2( event.target.checked );
 		updateCheckedCount();
 	};
 
-	const handleCheckbox3Change = (event) => {
-		setChecked3(event.target.checked);
+	const handleCheckbox3Change = ( event ) => {
+		setChecked3( event.target.checked );
 		updateCheckedCount();
 	};
 
-	const handleCheckbox4Change = (event) => {
-		setChecked4(event.target.checked);
+	const handleCheckbox4Change = ( event ) => {
+		setChecked4( event.target.checked );
 		updateCheckedCount();
 	};
 
 	const updateCheckedCount = () => {
 		setTimeout( () => {
-			const checkedCount = document.querySelectorAll('[data-testid="CheckBoxIcon"]').length;
+			const checkedCount = document.querySelectorAll( '[data-testid="CheckBoxIcon"]' ).length;
 
 			const elements = document.getElementsByClassName( checkedCount >= 2 ? 'start-testing' : 'use-text' );
-			console.log(elements);
+			console.log( elements );
 
-			for (let i = 0; i < elements.length; i++) {
-				elements[i].style.display = "block";
+			for ( let i = 0; i < elements.length; i++ ) {
+				elements[ i ].style.display = 'block';
 			}
 
 			const elements2 = document.getElementsByClassName( checkedCount >= 2 ? 'use-text' : 'start-testing' );
 
-			for (let i = 0; i < elements2.length; i++) {
-				elements2[i].style.display = "none";
+			for ( let i = 0; i < elements2.length; i++ ) {
+				elements2[ i ].style.display = 'none';
 			}
 		}, 200 );
 	};
-	
+
 	const [ prompt, setPrompt ] = useState( '' );
 	const [ test, setTest ] = useState( '' );
 	const [ edit, setEdit ] = useState( '' );
@@ -154,11 +155,11 @@ const FormText = (
 
 	const applyPrompt = () => {
 		sendUsageData();
-	
-		const firstTextInput = document.querySelector('.options input[type="text"]');
+
+		const firstTextInput = document.querySelector( '.options input[type="text"]' );
 		const value = firstTextInput.value;
 
-		//setControlValue( resultField.current.value );
+		// SetControlValue( resultField.current.value );
 		setControlValue( value );
 
 		onClose();
@@ -185,7 +186,7 @@ const FormText = (
 
 	const startTest = () => {
 		sendUsageData();
-	
+
 		setControlValue( joinedString );
 
 		onClose();
@@ -201,13 +202,13 @@ const FormText = (
 
 	const [value, setValue] = useState([50, 50]);
 
-  	const handleChange = (event, newValue) => {
-		setValue(newValue);
+  	const handleChange = ( event, newValue ) => {
+		setValue( newValue );
 	};
 
-	const valuetext = (value) => {
-		return `${value}%`;
-	}
+	const valuetext = ( value ) => {
+		return `${ value }%`;
+	};
 
 	const selectStyles = {
 		color: 'white',
@@ -227,7 +228,6 @@ const FormText = (
 	return (
 		<>
 			{ error && <PromptErrorMessage error={ error } onRetry={ lastRun.current } sx={ { mb: 6 } } /> }
-
 
 			{ showTestingDiv && (
 			<>
@@ -291,7 +291,7 @@ const FormText = (
 					<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
 						<Button size="small" variant="contained" color="primary" onClick={ startTest }>
 							{ __( 'Start test', 'elementor' ) }
-						</Button>						
+						</Button>
 					</Stack>
 				</Stack>
 			</>
@@ -331,7 +331,7 @@ const FormText = (
 
 			{ data.result && ! showTestingDiv && ! showEditDiv && (
 				<Box sx={ { mt: 3 } }>
-					<p style={{ marginBottom: '30px', lineHeight: '20px'}}>Choose up to two headline options:<br></br>Select one to use immediately or choose two to start an A/B test</p>
+					<p style={ { marginBottom: '30px', lineHeight: '20px' } }>Choose up to two headline options:<br></br>Select one to use immediately or choose two to start an A/B test</p>
 
 					<form className='options'>
 					<FormControl sx={{ m: 3 }} component="fieldset" variant="standard" style={{ width: '100%', margin: '0px' }}>
@@ -344,7 +344,7 @@ const FormText = (
 							onChange={handleCheckbox1Change}
 							/>
 							<TextField
-							defaultValue={ data.result }
+							defaultValue={ titles[ 0 ] }
 							fullWidth
 							label="Option 1"
 							InputProps={{
@@ -370,7 +370,7 @@ const FormText = (
 							onChange={handleCheckbox2Change}
 							/>
 							<TextField
-							defaultValue={ data.result }
+							defaultValue={ titles[ 1 ] }
 							fullWidth
 							label="Option 2"
 							InputProps={{
@@ -394,6 +394,7 @@ const FormText = (
 							onChange={handleCheckbox3Change}
 							/>
 							<TextField
+							defaultValue={ titles[ 2 ] }
 							fullWidth
 							label="Option 3"
 							InputProps={{
@@ -417,6 +418,7 @@ const FormText = (
 							onChange={handleCheckbox4Change}
 							/>
 							<TextField
+							defaultValue={ titles[ 3 ] }
 							fullWidth
 							label="Option 4"
 							InputProps={{
@@ -447,8 +449,7 @@ const FormText = (
 								</Button>
 							</div>
 						</Stack>
-					</Stack>
-				</form>
+					</form>
 				</Box>
 			) }
 
@@ -457,7 +458,7 @@ const FormText = (
 					<Textarea
 						fullWidth
 						ref={ resultField }
-						defaultValue={ data.result }
+						defaultValue={ titles[ 1 ] }
 						helperText={ __( 'Text generated by AI may be inaccurate or offensive.', 'elementor' ) }
 					/>
 
@@ -488,7 +489,7 @@ const FormText = (
 					<Stack direction="row" alignItems="center" sx={ { my: 8 } }>
 						<PromptCredits usagePercentage={ usagePercentage } />
 						<Stack direction="row" gap={ 3 } justifyContent="flex-end" flexGrow={ 1 }>
-							<Button size="small" color="secondary" variant="text" onClick={ goBack } style={{ position: 'relative', right: '50%' }}>
+							<Button size="small" color="secondary" variant="text" onClick={ goBack } style={ { position: 'relative', right: '50%' } }>
 								{ __( '< Go Back', 'elementor' ) }
 							</Button>
 							<Button size="small" color="secondary" variant="text" onClick={ reset }>
