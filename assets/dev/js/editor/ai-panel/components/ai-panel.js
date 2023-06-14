@@ -51,33 +51,33 @@ export default function AiPanel() {
 	};
 
 	const generateRecommendations = () => {
-		setLoading( true );
-		const endpoint = 'https://optimentor.ai/api/v1/recommendations';
-		const data = {
-			areas,
-			widgets,
-		};
-		const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
+		// Admin-ajax.php
+		$.ajax( {
+			url: '/wp-admin/admin-ajax.php',
+			type: 'POST',
+			data: {
+				areas: [ 'SEO' ],
+				widgets: [ 'Heading' ],
+				action: 'optimentor_generate_recommendations',
 			},
-			body: JSON.stringify( data ),
-		};
-		const response = fetch( endpoint, options );
+			beforeSend( xhr ) {
+				xhr.setRequestHeader( 'Content-Type', 'application/json' );
+			},
+			success( response ) {
+				console.log( response );
+				setLoading( false );
+			},
+			error( error ) {
+				console.log( error );
+				setLoading( false );
+			},
+		} );
 
+		setLoading( true );
 		// Wait 5 seconds
 		setTimeout( () => {
 			setIsTyping( true );
 		}, 5000 );
-
-		response
-			.then( ( res ) => res.json() )
-			.then( ( res ) => {
-				setRecommendations( res );
-				console.log( res );
-				setLoading( false );
-			} );
 	};
 
 	return (

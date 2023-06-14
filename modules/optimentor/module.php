@@ -77,18 +77,14 @@ class Module extends \Elementor\Core\Base\Module {
 		}
 	}
 
-	public function register_submit_prompt_endpoint() {
-			register_rest_route( 'optimentor/v1', '/submit_prompt/', array(
-				'methods' => 'POST',
-				'callback' => 
-				'permission_callback' => function () {
-					return current_user_can( 'edit_others_posts' );
-				},
-			) );
+	public function optimentor_generate_recommendations() {
+		return 'asdasd';
 	}
+
 
 	public function __construct() {
 		parent::__construct();
-		add_action( 'rest_api_init', 'register_prompt_submit_endpoint' );
+		add_action( 'wp_ajax_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
+		add_action( 'wp_ajax_nopriv_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
 	}
 }
