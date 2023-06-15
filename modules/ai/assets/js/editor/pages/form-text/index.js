@@ -224,6 +224,7 @@ const FormText = (
 	const selectStyles = {
 		color: 'text.secondary',
 		marginBottom: '20px',
+		marginTop: '7px',
 	};
 
 	if ( isLoading ) {
@@ -236,7 +237,7 @@ const FormText = (
 
 			{ showTestingDiv && (
 				<>
-					<Grid container direction="column" alignItems="left" spacing={ 3 } sx={ { marginBottom: '80px' } }>
+					<Grid container direction="column" alignItems="left" spacing={ 3 } sx={ { marginBottom: '40px' } }>
 						<Grid item style={ { textAlign: 'left' } }>
 							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '10px' } }>
 								{ 'Split Ratio:' }
