@@ -266,7 +266,7 @@ const FormText = (
 							</Grid>
 						</Grid>
 						<Grid item style={ { textAlign: 'left' } }>
-							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '15px', marginTop: '15px' } }>
+							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '15px', marginTop: '10px' } }>
 								{ 'Goal Trigger:' }
 							</Typography>
 							<Box width="100%">
