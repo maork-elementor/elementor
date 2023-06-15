@@ -178,8 +178,13 @@ const FormText = (
 
 		const inputValues = [];
 
+		let count = 0;
+
+		const checkedCount = document.querySelectorAll( '[data-testid="CheckBoxIcon"]' ).length;
+
 		textInputs.forEach( ( input ) => {
-			if ( '' !== input.value ) {
+			count++;
+			if ( count <= checkedCount ) {
 				inputValues.push( input.value );
 			}
 		} );
@@ -219,6 +224,7 @@ const FormText = (
 	const selectStyles = {
 		color: 'text.secondary',
 		marginBottom: '20px',
+		marginTop: '7px',
 	};
 
 	if ( isLoading ) {
@@ -231,7 +237,7 @@ const FormText = (
 
 			{ showTestingDiv && (
 				<>
-					<Grid container direction="column" alignItems="left" spacing={ 3 } sx={ { marginBottom: '80px' } }>
+					<Grid container direction="column" alignItems="left" spacing={ 3 } sx={ { marginBottom: '40px' } }>
 						<Grid item style={ { textAlign: 'left' } }>
 							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '10px' } }>
 								{ 'Split Ratio:' }
@@ -249,8 +255,9 @@ const FormText = (
 								</div>
 								<Slider
 									value={typeof value === 'number' ? value : 0}
-									onChange={handleSliderChange}
+									onChange={ handleSliderChange }
 									aria-labelledby="input-slider"
+									step={ 10 }
 								/>
 							</Grid>
 							<Grid item>
@@ -260,7 +267,7 @@ const FormText = (
 							</Grid>
 						</Grid>
 						<Grid item style={ { textAlign: 'left' } }>
-							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '15px', marginTop: '15px' } }>
+							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '15px', marginTop: '10px' } }>
 								{ 'Goal Trigger:' }
 							</Typography>
 							<Box width="100%">

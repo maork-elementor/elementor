@@ -36,6 +36,7 @@ export default class Module extends elementorModules.editor.utils.Module {
 					if ( view.$el.length > 0 ) {
 						const textarea = view.$el.find('textarea');
 						const dynamicTagIcon = view.$el.find( '.elementor-control-dynamic-switcher' );
+						const abVariation = view.$el.find( '.ab-variation' );
 					  
 						if (textarea.length > 0) {
 						  const textareaValue = textarea.val();
@@ -46,7 +47,11 @@ export default class Module extends elementorModules.editor.utils.Module {
 
 							textarea.hide();
 							dynamicTagIcon.hide();
+							abVariation.remove();
 							textareaWrapper.css('flex-direction', 'column');
+
+							const textBeforeTextarea = jQuery( '<label>' ).text( 'A/B Testing Variations:' ).addClass( 'elementor-control-title ab-variation' ).css('margin-bottom', '10px');
+      						textareaWrapper.append( textBeforeTextarea );
 					  
 							valuesArray.forEach((duplicatedValue) => {
 								const duplicatedTextarea = jQuery('<textarea>').val(duplicatedValue).css('margin-bottom', '15px').attr('readonly', 'readonly');
