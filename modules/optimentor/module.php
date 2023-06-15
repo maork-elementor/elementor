@@ -88,14 +88,13 @@ class Module extends \Elementor\Core\Base\Module {
 		return false;
 	}
 
-	public function optimentor_generate_recommendations() {
+	public function optimentor_generate_recommendations( $widget = null, $post_id = null ) {
 
 		global $wpdb;
-
-		$metrics = $_POST['metrics'];
-		$widget = $_POST['widget'];
-		$post_id = $_POST['post_id'];
-
+		if ( ! $widget && ! $post_id ) {
+			$widget = $_POST['widget'];
+			$post_id = $_POST['post_id'];
+		}
 		$site_title = get_bloginfo( 'name' );
 		$site_description = get_bloginfo( 'description' );
 

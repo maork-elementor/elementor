@@ -168,6 +168,9 @@ export default function AiPanel() {
 		let css = ' .elementor-heading-title {';
 
 		for ( const [ key, value ] of Object.entries( styleObject ) ) {
+			if ( 'font-size' === key ) {
+				continue;
+			}
 			css += `${ key }: ${ value } !important;`;
 		}
 
