@@ -70,8 +70,15 @@ const FormText = (
 	const initialValue = getControlValue() === additionalOptions?.defaultValue ? '' : getControlValue();
 
 	const { data, isLoading, error, reset, send, sendUsageData } = useTextPrompt( { result: initialValue, credits } );
-	const cleanData = data.result.replace( /\\n/g, '' );
-	const titles = data.result ? JSON.parse( cleanData ).titles : '';
+	const cleanData = data?.result?.replace( /\n/g, '' ) || '';
+	let titles;
+
+	try {
+		titles = JSON.parse( cleanData ).titles;
+	} catch ( error ) {
+		titles = cleanData.split( '#####' );
+	}
+
 	const [ checked1, setChecked1 ] = useState( true );
 	const [ checked2, setChecked2 ] = useState( false );
 	const [ checked3, setChecked3 ] = useState( false );
@@ -171,8 +178,13 @@ const FormText = (
 
 		const inputValues = [];
 
+		let count = 0;
+
+		const checkedCount = document.querySelectorAll( '[data-testid="CheckBoxIcon"]' ).length;
+
 		textInputs.forEach( ( input ) => {
-			if ( '' !== input.value ) {
+			count++;
+			if ( count <= checkedCount ) {
 				inputValues.push( input.value );
 			}
 		} );
@@ -199,9 +211,9 @@ const FormText = (
 		setEdit( '' );
 	};
 
-	const [value, setValue] = useState([50, 50]);
+	const [ value, setValue ] = useState( 50 );
 
-  	const handleChange = ( event, newValue ) => {
+	const handleSliderChange = ( event, newValue ) => {
 		setValue( newValue );
 	};
 
@@ -210,14 +222,9 @@ const FormText = (
 	};
 
 	const selectStyles = {
-		color: 'white',
-		marginBottom: '10px',
-		'&:before': {
-		  borderColor: 'white',
-		},
-		'&:after': {
-		  borderColor: 'white',
-		},
+		color: 'text.secondary',
+		marginBottom: '20px',
+		marginTop: '7px',
 	};
 
 	if ( isLoading ) {
@@ -230,9 +237,9 @@ const FormText = (
 
 			{ showTestingDiv && (
 				<>
-					<Grid container direction="column" alignItems="left" spacing={ 3 } sx={ { marginBottom: '80px' } }>
+					<Grid container direction="column" alignItems="left" spacing={ 3 } sx={ { marginBottom: '40px' } }>
 						<Grid item style={ { textAlign: 'left' } }>
-							<Typography variant="h3" color="text.secondary" style={ { marginBottom: '30px' } }>
+							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '10px' } }>
 								{ 'Split Ratio:' }
 							</Typography>
 						</Grid>
@@ -243,15 +250,14 @@ const FormText = (
 								</Typography>
 							</Grid>
 							<Grid item xs>
+								<div style={{ textAlign: 'center' }}>
+									{ value} / { 100 - value }
+								</div>
 								<Slider
-									aria-label="Weight"
-									value={ value }
-									onChange={ handleChange }
-									getAriaValueText={ valuetext }
-									valueLabelDisplay="on"
+									value={typeof value === 'number' ? value : 0}
+									onChange={ handleSliderChange }
+									aria-labelledby="input-slider"
 									step={ 10 }
-									min={ 0 }
-									max={ 100 }
 								/>
 							</Grid>
 							<Grid item>
@@ -261,26 +267,30 @@ const FormText = (
 							</Grid>
 						</Grid>
 						<Grid item style={ { textAlign: 'left' } }>
-							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '10px' } }>
+							<Typography variant="h4" color="text.secondary" style={ { marginBottom: '15px', marginTop: '10px' } }>
 								{ 'Goal Trigger:' }
 							</Typography>
 							<Box width="100%">
+								<Typography variant="body" color="text.secondary" style={ { marginBottom: '15px' } }>
+									{ 'Choose a Goal Trigger' }
+								</Typography>
 								<FormControl fullWidth>
-									<InputLabel style={ { color: 'white' } }>Select a Goal Trigger</InputLabel>
 									<Select
 										sx={ selectStyles }
 									>
 										<MenuItem value={ 1 }>Arrived to the next step</MenuItem>
 									</Select>
 								</FormControl>
+								<Typography variant="body" color="text.secondary" style={ { marginBottom: '15px' } }>
+									{ 'Choose a page' }
+								</Typography>
 								<FormControl fullWidth>
-									<InputLabel style={ { color: 'white' } }>Choose a page</InputLabel>
 									<Select
 										sx={ selectStyles }
 									>
-										<MenuItem value={ 1 }>Page 1</MenuItem>
-										<MenuItem value={ 2 }>Page 2</MenuItem>
-										<MenuItem value={ 3 }>Page 3</MenuItem>
+										<MenuItem value={ 1 }>Home</MenuItem>
+										<MenuItem value={ 2 }>Shop</MenuItem>
+										<MenuItem value={ 3 }>Contact Us</MenuItem>
 									</Select>
 								</FormControl>
 							</Box>
