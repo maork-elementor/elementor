@@ -13,13 +13,9 @@ import {
 	Select,
 	MenuItem,
 	Typography,
-	List,
-	ListItem,
-	ListItemText,
 	Divider,
-	ListItemAvatar,
-	Avatar,
 	Container,
+	ButtonGroup,
 	LinearProgress,
 	OutlinedInput,
 	Box,
@@ -80,6 +76,11 @@ export default function AiPanel() {
 					setIsTyping( false );
 					// Get old recommendations and merge with new ones
 					const newRecommendations = [ response.data.recommendations.data ];
+					if ( null === newRecommendations[ 0 ] || 0 === newRecommendations[ 0 ].length ) {
+						console.log( 'No recommendations found, fetching new ones...' );
+						newRecommendations();
+						return;
+					}
 					// Marge old recommendations with new ones
 					const margedRecommendations = [
 						...recommendations,
@@ -235,29 +236,54 @@ export default function AiPanel() {
 
 									return (
 										<>
-
-											<Typography variant="h6" gutterBottom
+											<Typography
+												variant="h6"
+												gutterBottom
 												style={ {
 													fontWeight: '700',
 													fontSize: '18px',
 													textTransform: 'capitalize',
 													marginBottom: '9px',
-												} }>
+												} }
+											>
 												{ widgetName }
 											</Typography>
 
-											<Divider style={ {
-												marginBottom: '9px',
-											} } />
-											{ Object.keys( styles[ 0 ] ).map( ( key ) => {
+											<Divider
+												style={ {
+													marginBottom: '9px',
+												} }
+											/>
+
+											<ButtonGroup
+												variant="contained"
+												aria-label="outlined primary button group"
+											>
+												{ Object.entries( styles[ 0 ] ).map( ( key ) => {
+													// Get last char
+													const number = key[ 0 ].slice( -1 );
+													return (
+														<Button
+															style={ {
+																marginLeft: '10px',
+																fontSize: '12px',
+																padding: '10px',
+															} }
+															key={ key }
+														>
+															Style { number }
+														</Button>
+													);
+												} ) }
+
+												{ /* { Object.keys( styles[ 0 ] ).map( ( key ) => {
 												// Debugger;
 												return (
-													<>
-														{ key } : { JSON.stringify( styles[ 0 ][ key ] ) }
-														<br />
-													</>
+													<Button key={ key }>{ key }</Button>
+												// { JSON.stringify( styles[ 0 ][ key ] ) }
 												);
-											} ) }
+											} ) } */ }
+											</ButtonGroup>
 										</>
 									);
 								} ) }

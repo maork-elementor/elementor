@@ -54,10 +54,6 @@ class Module extends \Elementor\Core\Base\Module {
 			'messages' => array(
 				array(
 					'role' => 'user',
-					'content' => 'You are a helpful assistant.',
-				),
-				array(
-					'role' => 'user',
 					'content' => $prompt,
 				),
 			),
@@ -71,6 +67,7 @@ class Module extends \Elementor\Core\Base\Module {
 		$args = array(
 			'headers' => $headers,
 			'body' => json_encode( $data ),
+			'timeout' => 500,
 		);
 
 		// Send the request using wp_remote_post
@@ -89,7 +86,6 @@ class Module extends \Elementor\Core\Base\Module {
 		}
 
 		return false;
-
 	}
 
 	public function optimentor_generate_recommendations() {
@@ -113,11 +109,7 @@ class Module extends \Elementor\Core\Base\Module {
 
 		$elementor_data = json_decode( $elementor_data, true );
 
-		$heading = '';
-
-			if ( ! $recommendations[ $widget ] ) {
-				$recommendations[ $widget ] = null;
-			}
+		$recommendations = [];
 
 		$widget_settings = [];
 
@@ -127,7 +119,7 @@ class Module extends \Elementor\Core\Base\Module {
 				if ( 'elements' == $key ) {
 					foreach ( $value as $element ) {
 
-						if ( $element['widgetType']  == $widget ) {
+						if ( $element['widgetType'] == $widget ) {
 							foreach ( $element['settings'] as $key => $value ) {
 								//if  $value is not array
 								if ( ! is_array( $value ) ) {
@@ -180,7 +172,7 @@ class Module extends \Elementor\Core\Base\Module {
 		wp_send_json_success( array(
 			'metrics' => $metrics,
 			'widgets' => $widgets,
-			'recommendations' => array (
+			'recommendations' => array(
 				'widget' => $widget,
 				'data' => $recommendations,
 			),
