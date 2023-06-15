@@ -178,9 +178,16 @@ class Module extends BaseModule {
 			throw new \Exception( 'not_connected' );
 		}
 
-		$prompt = 'generate 4 titles for a"' . $data['prompt'] . '" in order to perform AB testing in a flat array named "titles" in JSON format, the titles should improve the site conversion. The titles should be in the following tones Casual, Informative, Friendly and Motivational. one title for each tone. do not add the tones to the array. By the following pattern: {titles: ["Casual title", "Informative title", "Friendly title" "Motivational title"]} without newline \n characters';
+		$prompt = 'generate 4 titles for a"' . $data['prompt'] . '" in order to perform AB testing in a flat array named "titles" in JSON format, the titles should improve the site conversion. The titles should be in the following tones Casual, Informative, Friendly and Motivational. one title for each tone. do not add the tones to the array. your response should be in the following pattern: {titles: ["Casual title", "Informative title", "Friendly title" "Motivational title"]} without newline \n characters';
 
 		$result = $app->get_completion_text( $prompt );
+
+		$text = json_decode( $result['text'], true );
+
+		if ( ! is_array( $text ) || ! key_exists( 'titles', $text ) ) {
+			$this->ajax_ai_get_four_array_titles_completion_text( $data );
+		}
+
 		if ( is_wp_error( $result ) ) {
 			throw new \Exception( $result->get_error_message() );
 		}
