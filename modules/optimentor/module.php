@@ -20,7 +20,11 @@ class Module extends \Elementor\Core\Base\Module {
 		add_action( 'wp_ajax_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
 		add_action( 'wp_ajax_nopriv_optimentor_generate_recommendations', array( $this, 'optimentor_generate_recommendations' ) );
 		add_action( 'elementor/frontend/before_render', array( $this, 'randomize_test' ) );
+		add_action( 'init', array( $this, 'start_session' ) );
+	}
 
+	public function start_session() {
+		session_start();
 	}
 
 	public function submit_prompt( $request ) {
@@ -183,9 +187,10 @@ class Module extends \Elementor\Core\Base\Module {
 
 		$page_id = get_the_ID();
 		// Generate a random number between 0 and 1
+//		unset( $_SESSION['elementor_ab_test_title'] );
 		if ( ! isset( $_SESSION['elementor_ab_test_title'] ) ) {
 			$random_number = wp_rand( 0, 1 );
-			$_SESSION['elementor_ab_test_title'] = $random_number . '_' . $page_id ;
+			$_SESSION['elementor_ab_test_title'] = $random_number . '_' . $page_id;
 		}
 	}
 }

@@ -328,9 +328,7 @@ class Widget_Heading extends Widget_Base {
 			$page_id = $exploded_session[1];
 
 			// check if page id is the same as the one in the session
-			if ( get_the_ID() == $page_id ) {
-				$title = $exploded_titles[ $chosen_title_position ] . ' ' . $chosen_title_position;
-			}
+			$title = $exploded_titles[ $chosen_title_position ];
 		}
 
 
