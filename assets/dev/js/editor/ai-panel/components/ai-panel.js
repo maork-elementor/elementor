@@ -14,6 +14,7 @@ import {
 	MenuItem,
 	Typography,
 	Divider,
+	Modal,
 	Container,
 	ButtonGroup,
 	LinearProgress,
@@ -32,6 +33,16 @@ const MenuProps = {
 	},
 };
 
+const style = {
+	position: 'absolute',
+	top: '50%',
+	left: '50%',
+	transform: 'translate(-50%, -50%)',
+	width: 400,
+	bgcolor: 'background.paper',
+	boxShadow: 15,
+};
+
 const widgetsNames = [ 'Heading', 'Image', 'Text Editor' ];
 
 export default function AiPanel() {
@@ -41,6 +52,11 @@ export default function AiPanel() {
 	const [ isTyping, setIsTyping ] = React.useState( false );
 	const [ dataFetched, setDataFetched ] = React.useState( false );
 	const [ currentFetchWidget, setCurrentFetchWidget ] = React.useState( '' );
+	const [ fetchRetry, setFetchRetry ] = React.useState( 0 );
+
+	const [ open, setOpen ] = React.useState( false );
+	const handleOpen = () => setOpen( true );
+	const handleClose = () => setOpen( false );
 
 	const handleWidgetsChange = ( event ) => {
 		const {
@@ -52,9 +68,36 @@ export default function AiPanel() {
 		);
 	};
 
+	const validateJson = ( json ) => {
+		if ( ! Array.isArray( json ) || json.length !== 4 ) {
+			return false;
+		}
+
+		// Check each child object
+		for ( let i = 0; i < json.length; i++ ) {
+			const obj = json[ i ];
+
+			// Check that each child object is not null or empty
+			if ( null === obj || 0 === Object.keys( obj ).length ) {
+				return false;
+			}
+		}
+
+		return true;
+	};
+
 	const generateRecommendations = () => {
 		// Loop on widgets
 		// set current widget
+
+		if ( 2 === fetchRetry ) {
+			setLoading( false );
+			setIsTyping( false );
+			setDataFetched( true );
+			const recommendations_ = localStorage.getItem( 'optimentor_recommendations' );
+			setRecommendations( JSON.parse( recommendations_ ) );
+			return;
+		}
 
 		for ( const widget of widgets ) {
 			setCurrentFetchWidget( widget );
@@ -62,23 +105,25 @@ export default function AiPanel() {
 			setTimeout( () => {
 				setIsTyping( true );
 			}, 2000 );
+			const widgetName = widget.toLowerCase().replace( ' ', '_' );
 			jQuery.ajax( {
 				url: '/wp-admin/admin-ajax.php',
 				type: 'POST',
 				data: {
 					action: 'optimentor_generate_recommendations',
-					widget: widget.toLowerCase().replace( ' ', '_' ),
+					widget: widgetName,
 					post_id: window.elementor.config.document.id,
 				},
 				success( response ) {
 					console.log( response );
 
+					setFetchRetry( fetchRetry + 1 );
 					setIsTyping( false );
 					// Get old recommendations and merge with new ones
 					const newRecommendations = [ response.data.recommendations.data ];
-					if ( null === newRecommendations[ 0 ] || 0 === newRecommendations[ 0 ].length ) {
+					if ( ! validateJson( newRecommendations[ 0 ][ widgetName ] ) ) {
 						console.log( 'No recommendations found, fetching new ones...' );
-						newRecommendations();
+						generateRecommendations();
 						return;
 					}
 					// Marge old recommendations with new ones
@@ -86,6 +131,8 @@ export default function AiPanel() {
 						...recommendations,
 						...newRecommendations,
 					];
+					// Save to local storage
+					localStorage.setItem( 'optimentor_recommendations', JSON.stringify( margedRecommendations ) );
 					setRecommendations( margedRecommendations );
 
 					setLoading( false );
@@ -101,10 +148,44 @@ export default function AiPanel() {
 		}
 	};
 
+	const previewStyle = ( styleObject ) => {
+		var iframe = document.getElementById( 'elementor-preview-iframe' );
+
+		var doc = iframe.contentDocument || iframe.contentWindow.document;
+		let style = false;
+
+		if ( ! styleObject ) {
+			style = doc.getElementById( 'tmpStyleTag' );
+			// Remove the style tag
+			if ( style ) {
+				doc.head.removeChild( style );
+			}
+			return;
+		}
+
+		style = doc.createElement( 'style' );
+
+		let css = ' .elementor-heading-title {';
+
+		for ( const [ key, value ] of Object.entries( styleObject ) ) {
+			css += `${ key }: ${ value } !important;`;
+		}
+
+		css += '}';
+
+		style.innerHTML = css;
+
+		// Set the id attribute of the style tag
+		style.id = 'tmpStyleTag';
+
+		// Append the style to the head
+		doc.body.appendChild( style );
+	};
+
 	return (
 		<Panel>
 			<PanelHeader>
-				<PanelHeaderTitle>Optimentor AI UX Assistant</PanelHeaderTitle>
+				<PanelHeaderTitle>Optimentor AI Assistant</PanelHeaderTitle>
 			</PanelHeader>
 			{ loading && <LinearProgress color="primary" /> }
 			<PanelBody>
@@ -228,7 +309,6 @@ export default function AiPanel() {
 
 						{ ! loading && recommendations?.length > 0 && (
 							<>
-								{ /* Loop index and value */ }
 								{ recommendations.map( ( recommendation, index ) => {
 									// Modify the data as you wish
 									const widgetName = Object.keys( recommendation )[ 0 ];
@@ -259,19 +339,27 @@ export default function AiPanel() {
 												variant="contained"
 												aria-label="outlined primary button group"
 											>
-												{ Object.entries( styles[ 0 ] ).map( ( key ) => {
-													// Get last char
-													const number = key[ 0 ].slice( -1 );
+												{ Object.entries( styles ).map( ( key ) => {
+													const title = key[ 0 ].replace( '_', ' ' );
 													return (
 														<Button
+															onMouseOver={ () => {
+																previewStyle( key[ 1 ] );
+															} }
+															onMouseLeave={ () => {
+																previewStyle( false );
+															} }
+															onClick={ () => {
+																handleOpen();
+															} }
 															style={ {
 																marginLeft: '10px',
 																fontSize: '12px',
 																padding: '10px',
 															} }
-															key={ key }
+															key={ key[ 0 ] }
 														>
-															Style { number }
+															Style { title }
 														</Button>
 													);
 												} ) }
@@ -287,6 +375,53 @@ export default function AiPanel() {
 										</>
 									);
 								} ) }
+								<br /><br />
+								<Typography variant="caption" gutterBottom>
+									Based on your website's niche, I've generated personalized
+									recommendations for you to improve your conversion rates.
+								</Typography>
+
+								<Modal
+									open={ open }
+									onClose={ handleClose }
+									aria-labelledby="modal-modal-title"
+									aria-describedby="modal-modal-description"
+								>
+									<Box sx={ style }>
+										<Typography id="modal-modal-title" variant="h6" component="h3" style={ {
+											textAlign: 'center',
+											color: 'white',
+											backgroundColor: 'black',
+											padding: '7px',
+											fontSize: '16px',
+											fontWeight: 'normal',
+										} }>
+											Apply Recommendation
+										</Typography>
+										<Typography id="modal-modal-description" sx={ { mt: 2 } }
+											style={ {
+												textAlign: 'center',
+												paddingTop: '20px',
+											} }>
+
+											<Button
+												variant="contained"
+												style={ { marginBottom: '30px', marginRight: '20px' } }
+											>
+												Apply Style
+											</Button>
+
+											<Button
+												variant="contained"
+												style={ { marginBottom: '30px' } }
+											>
+												Apply as A/B Test
+											</Button>
+
+										</Typography>
+									</Box>
+								</Modal>
+
 							</>
 						) }
 					</Box>

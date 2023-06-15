@@ -144,8 +144,18 @@ class Module extends \Elementor\Core\Base\Module {
 		$promot .= 'if you change the font family please use browser supported font \n\n';
 		$promot .= 'provide me 4 different styles in JSON format \n\n';
 		$promot .= 'in this format: \n\n';
-		$promot .= '{xxx:xxx,xxx:xxx},{xxx:xxx,xxx:xxx} \n\n';
-		$promot .= 'The current css properties for my title are: \n\n	';
+		$promot .= '
+		[{
+			"color": "red"	
+		},
+			"font-size": "13px"
+		}, 
+		{
+			"color": "geern",
+			"font-size": "16px"
+		}]
+		 \n\n';
+		$promot .= 'But with all The current css properties for my title are: \n\n	';
 
 		foreach ( $widget_settings as $key => $value ) {
 			$promot .= $key . ': ' . $value . '\n';
@@ -165,12 +175,20 @@ class Module extends \Elementor\Core\Base\Module {
 			$json_arrays[] = json_decode( $match, true );
 		}
 
+		if ( empty( $json_arrays[0] ) ) {
+			$this->optimentor_generate_recommendations( $widget, $post_id );
+			return;
+		}
+
+		if ( count( $json_arrays ) > 4 ) {
+			$json_arrays = array_slice( $json_arrays, 0, 4 );
+		}
+		
 		$recommendations[ $widget ] = $json_arrays;
 
 		//loop through each metric
 
 		wp_send_json_success( array(
-			'metrics' => $metrics,
 			'widgets' => $widgets,
 			'recommendations' => array(
 				'widget' => $widget,
