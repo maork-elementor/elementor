@@ -17,6 +17,7 @@ use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
  */
 class Widget_Heading extends Widget_Base {
 
+	const AB_TEST_DEVIDER = '#####';
 	/**
 	 * Get widget name.
 	 *
@@ -319,6 +320,20 @@ class Widget_Heading extends Widget_Base {
 
 		$title = $settings['title'];
 
+		if ( str_contains( $title, static::AB_TEST_DEVIDER ) ) {
+			$exploded_titles = explode( static::AB_TEST_DEVIDER, $title );
+			$active_ab_test_data = $_SESSION['elementor_ab_test_title'];
+			$exploded_session = explode( '_', $active_ab_test_data );
+			$chosen_title_position = $exploded_session[0];
+			$page_id = $exploded_session[1];
+
+			// check if page id is the same as the one in the session
+			if ( get_the_ID() == $page_id ) {
+				$title = $exploded_titles[ $chosen_title_position ] . ' ' . $chosen_title_position;
+			}
+		}
+
+
 		if ( ! empty( $settings['link']['url'] ) ) {
 			$this->add_link_attributes( 'url', $settings['link'] );
 
@@ -326,6 +341,7 @@ class Widget_Heading extends Widget_Base {
 		}
 
 		$title_html = sprintf( '<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag( $settings['header_size'] ), $this->get_render_attribute_string( 'title' ), $title );
+
 
 		// PHPCS - the variable $title_html holds safe data.
 		echo $title_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

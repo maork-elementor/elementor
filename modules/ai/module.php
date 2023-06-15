@@ -178,7 +178,7 @@ class Module extends BaseModule {
 			throw new \Exception( 'not_connected' );
 		}
 
-		$prompt = 'generate 4 titles for a"' . $data['prompt'] . '" in order to perform AB testing in a flat array named "titles" in JSON format, the titles should improve the site conversion. The titles should be in the following tones Casual, Informative, Friendly and Motivational. one title for each tone. do not add the tones to the array. By the following pattern: {titles: ["Casual title", "Informative title", "Friendly title" "Motivational title"]} without newline \n characters';
+		$prompt = 'generate 4 titles for a"' . $data['prompt'] . '" in order to perform AB testing in a flat array named "titles" in JSON format, the titles should improve the site conversion. The titles should be in the following tones Casual, Informative, Friendly and Motivational. one title for each tone. do not add the tones to the array. By the following pattern: {titles: ["Casual title", "Informative title", "Friendly title" "Motivational title"]} without newline \n chracters';
 
 		$result = $app->get_completion_text( $prompt );
 		if ( is_wp_error( $result ) ) {

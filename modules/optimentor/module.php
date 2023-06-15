@@ -191,19 +191,9 @@ class Module extends \Elementor\Core\Base\Module {
 
 		$page_id = get_the_ID();
 		// Generate a random number between 0 and 1
-		if ( ! isset( $_SESSION['is_ab_test_set'] ) ) {
+		if ( ! isset( $_SESSION['elementor_ab_test_title'] ) ) {
 			$random_number = wp_rand( 0, 1 );
-			$_SESSION['is_ab_test_set'] = $random_number;
-		}
-
-		// Determine the option based on the random number
-		if ( 0 === $_SESSION['is_ab_test_set'] ) {
-			// Option 1
-			echo 'session value is 0' . $_SESSION['is_ab_test_set'];
-		} else {
-			// Option 2
-			echo 'session value is 1' . $_SESSION['is_ab_test_set'];
+			$_SESSION['elementor_ab_test_title'] = $random_number . '_' . $page_id ;
 		}
 	}
-
 }
