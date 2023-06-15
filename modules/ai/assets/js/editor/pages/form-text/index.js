@@ -254,8 +254,9 @@ const FormText = (
 								</div>
 								<Slider
 									value={typeof value === 'number' ? value : 0}
-									onChange={handleSliderChange}
+									onChange={ handleSliderChange }
 									aria-labelledby="input-slider"
+									step={ 10 }
 								/>
 							</Grid>
 							<Grid item>
