@@ -1378,22 +1378,24 @@ abstract class Controls_Stack extends Base_Object {
 	 * @return bool Whether the control is visible.
 	 */
 	public function is_control_visible( $control, $values = null ) {
-		if ( null === $values ) {
-			$values = $this->get_settings();
-		}
-
-		if ( ! empty( $control['conditions'] ) && ! Conditions::check( $control['conditions'], $values ) ) {
-			return false;
-		}
-
 		if ( empty( $control['condition'] ) ) {
 			return true;
 		}
 
+		if ( null === $values ) {
+			$values = $this->get_settings();
+		}
+
 		$controls = $this->get_controls();
+		$responsive_controls = array();
+		$condition_regex = '/([a-z_\-0-9]+)(?:\[([a-z_]+)])?(!?)$/i';
+
+		// Check if the required keys are set before the loop
+		$responsive_available = isset( $control['responsive'] );
+		$controls_available = ! empty( $controls );
 
 		foreach ( $control['condition'] as $condition_key => $condition_value ) {
-			preg_match( '/([a-z_\-0-9]+)(?:\[([a-z_]+)])?(!?)$/i', $condition_key, $condition_key_parts );
+			preg_match( $condition_regex, $condition_key, $condition_key_parts );
 
 			$pure_condition_key = $condition_key_parts[1];
 			$condition_sub_key = $condition_key_parts[2];
@@ -1403,26 +1405,21 @@ abstract class Controls_Stack extends Base_Object {
 				return false;
 			}
 
-			$are_control_and_condition_responsive = isset( $control['responsive'] ) && ! empty( $controls[ $pure_condition_key ]['responsive'] );
 			$condition_name_to_check = $pure_condition_key;
 
-			if ( $are_control_and_condition_responsive ) {
-				$device_suffix = Controls_Manager::get_responsive_control_device_suffix( $control );
-
-				$condition_name_to_check = $pure_condition_key . $device_suffix;
-
-				// If the control is not desktop, and a conditioning control for the corresponding device exists, use it.
-				$instance_value = $values[ $pure_condition_key . $device_suffix ] ?? $values[ $pure_condition_key ];
-			} else {
-				$instance_value = $values[ $pure_condition_key ];
-			}
-
-			if ( $condition_sub_key && is_array( $instance_value ) ) {
-				if ( ! isset( $instance_value[ $condition_sub_key ] ) ) {
-					return false;
+			if ( $responsive_available && $controls_available && ! empty( $controls[ $pure_condition_key ]['responsive'] ) ) {
+				if ( ! isset( $responsive_controls[ $pure_condition_key ] ) ) {
+					$device_suffix = Controls_Manager::get_responsive_control_device_suffix( $control );
+					$responsive_controls[ $pure_condition_key ] = $pure_condition_key . $device_suffix;
 				}
 
-				$instance_value = $instance_value[ $condition_sub_key ];
+				$condition_name_to_check = $responsive_controls[ $pure_condition_key ];
+			}
+
+			$instance_value = $values[ $condition_name_to_check ];
+
+			if ( $condition_sub_key && is_array( $instance_value ) && ! isset( $instance_value[ $condition_sub_key ] ) ) {
+				return false;
 			}
 
 			if ( ! $instance_value ) {
@@ -1450,7 +1447,8 @@ abstract class Controls_Stack extends Base_Object {
 			}
 
 			/**
-			 * If the $condition_value is a non empty array - check if the $condition_value contains the $instance_value,
+			 * If the $condition_value is a non empty array - check if
+			 * the $condition_value contains the $instance_value,
 			 * If the $instance_value is a non empty array - check if the $instance_value contains the $condition_value
 			 * otherwise check if they are equal. ( and give the ability to check if the value is an empty array )
 			 */
@@ -1462,13 +1460,14 @@ abstract class Controls_Stack extends Base_Object {
 				$is_contains = $instance_value === $condition_value;
 			}
 
-			if ( $is_negative_condition && $is_contains || ! $is_negative_condition && ! $is_contains ) {
+			if ( ( $is_negative_condition && $is_contains ) || ( ! $is_negative_condition && ! $is_contains ) ) {
 				return false;
 			}
 		}
 
 		return true;
 	}
+
 
 	/**
 	 * Start controls section.
